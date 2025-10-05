@@ -1,0 +1,175 @@
+<app-header></app-header>
+<div class="profile-page">
+  <div class="profile-container">
+    <div class="profile-header">
+      <h1 class="profile-title">Profile</h1>
+    </div>
+
+    <div class="profile-content">
+      <div class="profile-main">
+        <div class="profile-card">
+          <!-- Avatar Section -->
+          <div class="avatar-section">
+            <div class="avatar-wrapper">
+              <img [src]="profileSrc" alt="Profile" class="avatar-image" />
+            </div>
+            <input 
+              type="file" 
+              id="fileInput" 
+              accept="image/*" 
+              hidden 
+              (change)="onPhotoSelected($event)" 
+            />
+            <button 
+              type="button" 
+              class="change-photo-btn"
+              (click)="triggerFileInput()"
+            >
+              Change photo
+            </button>
+          </div>
+
+          <!-- Form Section -->
+          <div class="form-section">
+            <!-- Success/Error Messages -->
+            <div *ngIf="successMessage" class="success-message">
+              {{ successMessage }}
+            </div>
+            <div *ngIf="errorMessage" class="error-message">
+              {{ errorMessage }}
+            </div>
+
+            <!-- Name Field -->
+            <div class="form-group">
+              <label class="form-label">Name</label>
+              <input 
+                type="text" 
+                class="form-input" 
+                [(ngModel)]="name"
+                placeholder="Enter your name"
+              />
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input 
+                type="email" 
+                class="form-input" 
+                [(ngModel)]="email"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group password-row">
+  <button 
+    type="button" 
+    class="change-password-link"
+    (click)="openPasswordModal()"
+  >
+    Change password
+  </button>
+</div>
+
+            <!-- Save Button -->
+            <button 
+              type="button" 
+              class="save-btn"
+              (click)="saveEdit()"
+              [disabled]="isLoading"
+            >
+              {{ isLoading ? 'Saving...' : 'Save edit' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="profile-sidebar">
+        <button class="wallet-btn" (click)="goToWallet()">
+          Wallet
+        </button>
+
+        <div class="history-section">
+          <button class="history-item" (click)="goToGameHistory()">
+            <span class="history-icon">›</span>
+            <span>Game purchase history</span>
+          </button>
+          <button class="history-item" (click)="goToTopUpHistory()">
+            <span class="history-icon">›</span>
+            <span>Top up history</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Password Change Modal -->
+  <div class="modal-overlay" *ngIf="showPasswordModal" (click)="closePasswordModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Change Password</h2>
+        <button class="modal-close" (click)="closePasswordModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Error Message -->
+        <div *ngIf="passwordErrorMessage" class="error-message">
+          {{ passwordErrorMessage }}
+        </div>
+
+        <!-- Current Password -->
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input 
+            type="password" 
+            class="form-input" 
+            [(ngModel)]="currentPassword"
+            placeholder="Enter current password"
+          />
+        </div>
+
+        <!-- New Password -->
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input 
+            type="password" 
+            class="form-input" 
+            [(ngModel)]="newPassword"
+            placeholder="Enter new password (min 6 characters)"
+          />
+        </div>
+
+        <!-- Confirm New Password -->
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input 
+            type="password" 
+            class="form-input" 
+            [(ngModel)]="confirmPassword"
+            placeholder="Confirm new password"
+          />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="modal-btn-cancel"
+          (click)="closePasswordModal()"
+        >
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="modal-btn-save"
+          (click)="changePassword()"
+          [disabled]="isChangingPassword"
+        >
+          {{ isChangingPassword ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

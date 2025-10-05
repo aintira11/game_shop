@@ -1,0 +1,28 @@
+<div class="login-header">
+  <div class="brand">GameShop</div>
+</div>
+
+<div class="login-page">
+  <div class="login-left">
+    <h2>Welcome back!</h2>
+    <label>Enter your Credentials to access your account</label>
+
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="login()" style="margin-top: 100px;">
+
+      <label>Email</label>
+      <input type="email" formControlName="email" placeholder="Your email" />
+
+      <label>Password</label>
+      <input type="password" formControlName="password" placeholder="Password" />
+
+      <button type="submit">Login</button>
+      <div class="signin-cta" >
+        <span>Have an account?</span>
+        <a routerLink="/register" class="signin-link">Sign Up</a>
+      </div>
+    </form>
+  </div>
+  <div class="login-right">
+    <img src="assets/image/chris-lee-70l1tDAI6rM-unsplash%204.png" alt="Login banner" />
+  </div>
+</div>

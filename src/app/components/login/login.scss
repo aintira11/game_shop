@@ -1,0 +1,102 @@
+.login-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  color: #0b0b0b;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.login-header .brand {
+  font-weight: 800;
+  font-size: 20px;
+  padding: 0 16px;
+  color: #0b4180;
+}
+
+.login-page {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  // grid-template-columns: 50% 50%;
+  gap: 24px;
+  // align-items: center;
+  align-items: stretch;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+}
+
+.login-left {
+  // padding: 48px 64px;
+  margin-left: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  box-sizing: border-box;
+  padding-left: 100px;
+}
+
+
+
+.login-form {
+  display: grid;
+  gap: 12px;
+  width: 70%;
+}
+
+.login-form input {
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #2b2b2b;
+  background: #0a0a0a;
+  color: #ffffff;
+  padding: 0 12px;
+}
+
+.login-form button {
+  margin-top: 12px;
+  height: 44px;
+  border-radius: 10px;
+  border: 0;
+  background: #6ba2f8;
+  color: #0b0b0b;
+  font-weight: 600;
+}
+
+.signin-cta {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #bdbdbd;
+  text-align: center;
+}
+
+.signin-cta .signin-link {
+  color: #6ba2f8;
+  text-decoration: none;
+  margin-left: 6px;
+}
+
+.signin-cta .signin-link:hover {
+  text-decoration: underline;
+}
+
+.login-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 24px;
+  height: 100%;
+}
+
+.login-right img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+

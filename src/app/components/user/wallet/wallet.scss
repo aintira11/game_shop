@@ -1,0 +1,24 @@
+.profile-page {
+    min-height: 100vh;
+    // background-color: #000;
+    // color: #fff;
+    padding: 40px 150px;
+  }
+  
+  .profile-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .profile-header {
+    margin-bottom: 40px;
+  
+    .profile-title {
+      font-size: 25px;
+      font-weight: 400;
+      color: #fff;
+      border-left: 4px solid #ffc107;
+      padding-left: 16px;
+      margin: 0;
+    }
+  }
