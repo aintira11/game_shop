@@ -5,15 +5,17 @@ import { Register } from './components/register/register';
 import { AdminHome } from './components/admin/admin-home/admin-home';
 import { Profile } from './components/user/profile/profile';
 import { Wallet } from './components/user/wallet/wallet';
+import { ManageGame } from './components/admin/manage-game/manage-game';
 
 export const routes: Routes = [
-     {path: 'home', component: Home},
-     {path: '', component: Login},
+     {path: '', component: Home},
+     {path: 'login', component: Login},
      {path: 'register', component: Register},
      //admin
      {path: 'admin',component:AdminHome},
      //user
      {path: 'profile',component:Profile},
      {path: 'wallet' ,component:Wallet},
+     {path: 'manage_game' ,component:ManageGame},
 
 ];

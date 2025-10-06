@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../service/auth.service';
-import { DataUser } from '../../config/model';
+import { AuthService } from '../../../service/auth.service';
+import { DataUser } from '../../../config/model';
 import { CommonModule } from '@angular/common';
-
 
 @Component({
   selector: 'app-header',
@@ -12,6 +11,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './header.scss'
 })
 export class Header implements OnInit {
+
   datauser: DataUser | null = null;
 
   constructor(private router: Router, private authService: AuthService){
@@ -31,5 +31,10 @@ export class Header implements OnInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  manage_game(): void {
+    this.authService.logout();
+    this.router.navigate(['manage_game']);
   }
 }

@@ -1,0 +1,13 @@
+<header class="app-header">
+  <div class="brand" routerLink="/home">GameShop</div>
+  <nav class="main-nav">
+    <button class="nav-btn" type="button">Home</button>
+    <button class="nav-btn" type="button"(click)="manage_game()">Game</button>
+    <button class="nav-btn" type="button" (click)="profile()">Transaction</button>
+    <button class="nav-btn" type="button" (click)="profile()">Discount Code</button>
+      <button class="nav-btn" type="button" (click)="logout()">Log out</button>
+  </nav>
+  <!-- <div class="avatar">
+    <img [src]="datauser?.profile || 'assets/image/cat%204.png'" alt="avatar" />
+  </div> -->
+</header>

@@ -64,7 +64,7 @@ async login(): Promise<void> {
       if (user.user_type === 'admin') {
         this.router.navigate(['admin']);
       } else {
-        this.router.navigate(['home']);
+        this.router.navigate(['']);
       }
     } else {
       this.showSnackBar('ไม่พบข้อมูลผู้ใช้');
@@ -90,6 +90,6 @@ showSnackBar(message: string) {
 
 
   home(){
-    this.router.navigate(['home']);
+    this.router.navigate(['']);
   }
 }

@@ -100,7 +100,7 @@ export class Register {
       // Registration successful
       console.log('Registration successful:', response);
       alert('สมัครสมาชิกสำเร็จ!');
-      this.router.navigate(['/']);
+      this.router.navigate(['/login']);
 
     } catch (error: any) {
       console.error('Register error:', error);
@@ -120,6 +120,6 @@ export class Register {
   }
 
   login(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 }

@@ -1,12 +1,22 @@
 <header class="app-header">
   <div class="brand" routerLink="/home">GameShop</div>
-  <nav class="main-nav">
+  
+  <!-- Navigation for logged in users -->
+  <nav class="main-nav" *ngIf="datauser">
     <button class="nav-btn" type="button">shopping cart</button>
     <button class="nav-btn" type="button">Game library</button>
     <button class="nav-btn" type="button" (click)="profile()">Profile</button>
-      <button class="nav-btn" type="button" (click)="logout()">Log out</button>
+    <button class="nav-btn" type="button" (click)="logout()">Log out</button>
   </nav>
-  <div class="avatar">
+
+  <!-- Navigation for guests -->
+  <nav class="main-nav" *ngIf="!datauser">
+    <button class="nav-btn" type="button" routerLink="/register">Sign up</button>
+    <button class="nav-btn" type="button" routerLink="/login">Log in</button>
+  </nav>
+
+  <!-- Avatar only shown for logged in users -->
+  <div class="avatar" *ngIf="datauser">
     <img [src]="datauser?.profile || 'assets/image/cat%204.png'" alt="avatar" />
   </div>
 </header>

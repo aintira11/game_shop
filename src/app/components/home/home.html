@@ -1,1 +1,105 @@
 <app-header></app-header>
+<div class="search-page">
+  <div class="search-container">
+    <!-- Search Header -->
+    <div class="search-header">
+      <h1 class="page-title">Search Games</h1>
+      
+      <!-- Search Bar -->
+      <div class="search-bar-wrapper">
+        <div class="search-input-group">
+          <input 
+            type="text" 
+            class="search-input" 
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()"
+            placeholder="Search for games..."
+          />
+          <button class="search-btn" (click)="onSearch()">
+            <span class="search-icon">🔍</span>
+            Search
+          </button>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="filter-group">
+          <label class="filter-label">Category:</label>
+          <select 
+            class="category-select" 
+            [(ngModel)]="selectedCategory"
+            (change)="onCategoryChange()"
+          >
+            <option *ngFor="let category of categories" [value]="category">
+              {{ category === 'all' ? 'All Categories' : category }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-banner">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading games...</p>
+    </div>
+
+    <!-- Game Results -->
+    <div *ngIf="!isLoading" class="games-section">
+      <!-- Results Count -->
+      <div class="results-info">
+        <p>Found {{ filteredGames.length }} game(s)</p>
+      </div>
+
+      <!-- No Results -->
+      <div *ngIf="filteredGames.length === 0" class="no-results">
+        <p>No games found. Try a different search term or category.</p>
+      </div>
+
+      <!-- Game Cards Grid -->
+      <div class="games-grid">
+        <div 
+          *ngFor="let game of filteredGames" 
+          class="game-card"
+          (click)="viewGameDetail(game.game_id)"
+        >
+          <div class="game-image">
+            <img [src]="game.image_url" [alt]="game.name" />
+            <div class="game-overlay">
+              <button 
+                class="view-btn"
+                (click)="viewGameDetail(game.game_id)"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+
+          <div class="game-info">
+            <h3 class="game-title">{{ game.name }}</h3>
+            <p class="game-category" *ngIf="game.category">
+              {{ game.category }}
+            </p>
+            <!-- <p class="game-description">
+              {{ game.description?.substring(0, 100) }}{{ game.description?.length > 100 ? '...' : '' }}
+            </p> -->
+            
+            <div class="game-footer">
+              <span class="game-price">฿{{ game.price | number:'1.2-2' }}</span>
+              <button 
+                class="add-cart-btn"
+                (click)="addToCart(game, $event)"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -7,18 +7,18 @@ import { DataUser } from '../config/model';
 export class AuthService {
   private user: DataUser | null = null;
    
-  constructor() {
-    const storedUser = sessionStorage.getItem('user');
-    if (storedUser) {
-      this.user = JSON.parse(storedUser); // โหลดข้อมูลกลับมา
-    }
+ constructor() {
+  const storedUser = localStorage.getItem('user');  //ใช้ localStorage 
+  if (storedUser) {
+    this.user = JSON.parse(storedUser);
   }
+}
 
   //เก็บข้อมูลผู้ใช้ที่ล็อกอินเข้าระบบไว้ในตัวแปร this.user
-  setUser(user: DataUser) {
-    this.user = user;
-     sessionStorage.setItem('user', JSON.stringify(user));
-  }
+setUser(user: DataUser) {
+  this.user = user;
+  localStorage.setItem('user', JSON.stringify(user)); // เก็บถาวร
+}
 
   // ดึงข้อมูลของผู้ใช้ที่ถูกเก็บไว้
   getUser(): DataUser | null {
