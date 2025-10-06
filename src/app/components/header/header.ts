@@ -28,8 +28,10 @@ export class Header implements OnInit {
   //   this.router.navigate(['']);
   // }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
+logout(): void {
+  console.log("Logout clicked");
+  this.authService.logout();
+  this.router.navigate(['/login']);
+}
+
 }

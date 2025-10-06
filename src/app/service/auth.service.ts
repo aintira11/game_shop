@@ -31,8 +31,11 @@ setUser(user: DataUser) {
   }
 
   //ออกจากระบบ 
-  logout() {
-    this.user = null;
-    sessionStorage.removeItem('user');
-  }
+logout() {
+  console.log("Logging out...");
+  this.user = null;
+  localStorage.removeItem('user');
+}
+
+
 }

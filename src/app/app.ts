@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Component, signal,OnInit  } from '@angular/core';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from './service/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,13 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('gameshop_website');
+  constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+    }
+  }
 }
