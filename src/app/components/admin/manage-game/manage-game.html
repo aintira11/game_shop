@@ -1,1 +1,130 @@
-<p>manage-game works!</p>
+<app-header></app-header>
+
+<div class="profile-page">
+  <div class="profile-container">
+    <!-- Header with Search and Add Button -->
+    <div class="profile-header">
+      <div style="display: flex; align-items: center; justify-content: space-around;">
+        <h1 class="profile-title" style="margin-right: 30px;">Add/Edit Game</h1>
+        <button class="btn-add" (click)="openAddModal()">Add</button>
+      </div>
+      <div class="header-actions">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="search"
+          [(ngModel)]="searchQuery"
+          (input)="searchGames()">
+      </div>
+    </div>
+
+    <!-- Game List -->
+    <div class="game-list">
+      <div class="game-card" *ngFor="let game of getFilteredGames()" (click)="openEditModal(game)">
+        <img [src]="game.game_image" [alt]="game.game_name" class="game-image">
+        <div class="game-info">
+          <h3 class="game-name">{{ game.game_name }}</h3>
+          <p class="game-genre">Category: {{ game.category_name || 'ไม่ระบุ' }}</p>
+          <p class="game-date">{{ game.release_date | date:'dd/MM/yyyy' }}</p>
+          <p class="game-price">{{ game.price | number:'1.0-0' }} บาท</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <button class="btn-mode" [class.active]="!isEditMode">Add</button>
+      <button class="btn-mode" [class.active]="isEditMode">Edit</button>
+      <h2 class="modal-title">Game</h2>
+    </div>
+
+    <div class="modal-body">
+      <!-- Image Upload Section -->
+      <div class="image-section">
+        <div class="image-preview">
+          <img [src]="profileSrc || 'assets/placeholder-game.jpg'" alt="Game Image">
+        </div>
+        <button class="btn-upload" (click)="triggerFileInput()">Add a photo</button>
+        <input 
+          type="file" 
+          id="fileInput" 
+          accept="image/*" 
+          (change)="onPhotoSelected($event)"
+          style="display: none;">
+      </div>
+
+      <!-- Form Section -->
+      <div class="form-section">
+        <!-- Name Input -->
+        <div class="form-group">
+          <label>Name</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentGame.game_name" 
+            class="form-input"
+            placeholder="Enter game name">
+        </div>
+
+        <!-- Category Dropdown -->
+        <div class="form-group">
+          <label>Category</label>
+          <select 
+            class="form-input" 
+            [(ngModel)]="currentGame.category_id"
+          >
+            <option [value]="null" disabled>Select category</option>
+            <option *ngFor="let category of categories" [value]="category.category_id">
+              {{ category.category_name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Details Input -->
+        <div class="form-group">
+          <label>Details</label>
+          <textarea 
+            [(ngModel)]="currentGame.description" 
+            class="form-input"
+            placeholder="Enter game details"
+            rows="4"></textarea>
+        </div>
+
+        <!-- Price Input -->
+        <div class="form-group">
+          <label>Price (฿)</label>
+          <input 
+            type="number" 
+            [(ngModel)]="currentGame.price" 
+            class="form-input"
+            placeholder="Enter price"
+            min="0">
+        </div>
+
+        <!-- Release Date Display (Read-only in Edit mode) -->
+        <div class="form-group" *ngIf="isEditMode">
+          <label>Release Date</label>
+          <input 
+            type="text" 
+            [value]="currentGame.release_date | date:'dd/MM/yyyy HH:mm:ss'" 
+            class="form-input"
+            readonly
+            disabled>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+          <button class="btn-edit" (click)="saveGame()" [disabled]="isLoading">
+            {{ isLoading ? 'กำลังบันทึก...' : (isEditMode ? 'Edit' : 'Add') }}
+          </button>
+          <button class="btn-delete" (click)="isEditMode ? deleteGame(currentGame.game_id!) : closeModal()" [disabled]="isLoading">
+            {{ isEditMode ? 'Delete' : 'Cancel' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

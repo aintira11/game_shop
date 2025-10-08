@@ -21,7 +21,7 @@ export class Header implements OnInit {
 
   }
 
-  profile(): void {
+  Transaction(): void {
     this.router.navigate(['/profile']);
   }
   // gameshop(): void {
@@ -34,7 +34,12 @@ export class Header implements OnInit {
   }
 
   manage_game(): void {
-    this.authService.logout();
+    // this.authService.logout();
     this.router.navigate(['manage_game']);
   }
+  adminhome(): void {
+    // this.authService.logout();
+    this.router.navigate(['admin']);
+  }
+  
 }

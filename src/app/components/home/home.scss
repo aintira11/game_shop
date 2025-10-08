@@ -157,6 +157,40 @@
 }
 
 .games-section {
+  .popular-section {
+    margin-bottom: 60px;
+    
+    .section-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 24px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .popular-games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  .all-games-section {
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 24px 0;
+    }
+  }
+
   .results-info {
     margin-bottom: 20px;
     color: #999;
@@ -188,6 +222,30 @@
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+
+  &.popular-card {
+    border-color: #ffc107;
+    
+    &:hover {
+      border-color: #ffb300;
+      box-shadow: 0 8px 24px rgba(255, 193, 7, 0.3);
+    }
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+  }
 
   &:hover {
     border-color: #64b5f6;
@@ -274,6 +332,26 @@
       margin: 0 0 16px 0;
       line-height: 1.5;
       min-height: 42px;
+    }
+
+    .game-stats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+
+      .purchase-count {
+        font-size: 12px;
+        color: #ffc107;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        &:before {
+          content: '🔥';
+        }
+      }
     }
 
     .game-footer {
