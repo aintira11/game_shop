@@ -6,11 +6,13 @@ import { HttpClient } from '@angular/common/http';
 import { Constants } from '../../config/constants';
 import { Header } from '../header/header';
 import { Category, Game } from '../../config/model';
+import { TruncateNumberPipe } from '../../config/truncate-number.pipe';
+import { AuthService } from '../../service/auth.service';
 
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Header, FormsModule],
+  imports: [CommonModule, Header, FormsModule, TruncateNumberPipe],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
@@ -27,7 +29,8 @@ export class Home implements OnInit {
   constructor(
     private http: HttpClient,
     private constants: Constants,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -67,8 +70,8 @@ export class Home implements OnInit {
   // โหลดเกมยอดนิยม
   async loadPopularGames(): Promise<void> {
     try {
-      const apiUrl = `${this.constants.API_ENDPOINT}/games/bestseller`;
-     const response: any = await this.http.get(apiUrl).toPromise();
+    const apiUrl = `${this.constants.API_ENDPOINT}/games/bestseller`;
+    const response: any = await this.http.get(apiUrl).toPromise();
     this.popularGames = response.popularGames || response || [];
     console.log('popularGames:', this.popularGames);
     } catch (error: any) {
@@ -114,9 +117,36 @@ export class Home implements OnInit {
     this.router.navigate(['/game', gameId]);
   }
 
-  addToCart(game: Game, event: Event): void {
-    event.stopPropagation();
-    console.log('Add to cart:', game);
-    alert(`เพิ่ม ${game.game_name} ลงในตะกร้าแล้ว`);
+addToCart(game: Game, event: Event): void {
+  event.stopPropagation();
+
+  const user_id = this.authService.getUser();
+ // ดึง user_id จาก localStorage หรือ session
+  if (!user_id) {
+    alert('กรุณาเข้าสู่ระบบก่อนเพิ่มลงตะกร้า');
+    return;
   }
+
+  const payload = {
+    user_id: user_id.user_id,
+    game_id: game.game_id
+  };
+
+  // เรียก API เพิ่มลงตะกร้า
+  this.http.post(`${this.constants.API_ENDPOINT}/cart/gametocart`, payload).subscribe({
+    next: (res: any) => {
+      if (res.message === "คุณมีเกมนี้ในตะกร้าแล้ว") {
+        alert('⚠️ เกมนี้อยู่ในตะกร้าของคุณแล้ว');
+      } else {
+        alert('✅ เพิ่มเกมลงตะกร้าสำเร็จ');
+        
+      }
+    },
+    error: (err) => {
+      console.error('Add to cart error:', err);
+      alert('❌ เกิดข้อผิดพลาดระหว่างเพิ่มลงตะกร้า');
+    }
+  });
+}
+
 }

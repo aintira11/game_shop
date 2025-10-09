@@ -1,0 +1,109 @@
+<!-- cart.html -->
+<app-header></app-header>
+<div class="cart-container">
+  <div class="cart-header">
+      <h1 class="profile-title">Profile</h1>
+    <p class="item-count">{{ cartItems.length }} List</p>
+  </div>
+
+  <div class="cart-content" *ngIf="cartItems.length > 0; else emptyCart">
+    <!-- Game Cards -->
+    <div class="game-list">
+      <!-- ปุ่มเลือก/ยกเลิกทั้งหมด -->
+      <div class="select-all-bar">
+        <label class="checkbox-container">
+          <input 
+            type="checkbox" 
+            [checked]="selectedGames.size === cartItems.length && cartItems.length > 0"
+            [indeterminate]="selectedGames.size > 0 && selectedGames.size < cartItems.length"
+            (change)="selectedGames.size === cartItems.length ? deselectAll() : selectAll()"
+          />
+          <span class="checkmark"></span>
+          <span class="label-text">
+            {{ selectedGames.size === cartItems.length ? 'Cancel All' : 'Select All' }}
+            <span class="selected-info" *ngIf="selectedGames.size > 0">
+              ({{ selectedCount }}/{{ cartItems.length }})
+            </span>
+          </span>
+        </label>
+      </div>
+
+      <!-- Game Cards -->
+      <div 
+        class="game-card" 
+        *ngFor="let item of cartItems"
+        [class.selected]="isSelected(item.game_id)"
+      >
+        <label class="checkbox-container">
+          <input 
+            type="checkbox" 
+            [checked]="isSelected(item.game_id)"
+            (change)="toggleGameSelection(item.game_id)"
+          />
+          <span class="checkmark"></span>
+        </label>
+
+        <div class="game-info">
+          <img class="game-icon" [src]="item.game_image" alt="{{ item.game_name }}" />
+          <div class="game-details">
+            <h3>{{ item.game_name }}</h3>
+            <p class="game-price">฿{{ item.price | number:'1.2-2'}}</p>
+          </div>
+        </div>
+        
+        <div class="game-actions">
+          <button class="btn-remove" (click)="removeFromCart(item.game_id)">
+            <span class="icon">🗑️</span>
+            Delect
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="cart-summary">
+      <div class="summary-row">
+        <span>Number of games selected:</span>
+        <span>{{ selectedCount }} game</span>
+      </div>
+      <div class="summary-row">
+        <span>Total number of games:</span>
+        <span>{{ cartItems.length }} game</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total amount payable:</span>
+        <span class="total-price">฿{{ totalPrice.toFixed(2) }}</span>
+      </div>
+      
+      <button 
+        class="btn-checkout" 
+        (click)="proceedToCheckout()" 
+        [disabled]="isProcessing || selectedGames.size === 0"
+      >
+        <span *ngIf="!isProcessing">💳 Make payment ({{ selectedCount }} List)</span>
+        <span *ngIf="isProcessing">⏳ in progress...</span>
+      </button>
+
+      <p class="checkout-note" *ngIf="selectedGames.size === 0">
+        Please select the game you wish to purchase.
+      </p>
+    </div>
+  </div>
+
+  <ng-template #emptyCart>
+    <div class="empty-cart">
+      <div class="empty-icon">🛒</div>
+      <h2>ตะกร้าของคุณว่างเปล่า</h2>
+      <p>เพิ่มเกมที่คุณชอบลงในตะกร้าสินค้า</p>
+      <button class="btn-browse" (click)="goToStore()">
+        🎮 เลือกซื้อเกม
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Toast Notification -->
+  <div class="toast" [class.show]="showToast" [class.error]="toastType === 'error'">
+    {{ toastMessage }}
+  </div>
+</div>
+

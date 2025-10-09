@@ -92,6 +92,8 @@
               
               <div class="game-footer">
                 <span class="game-price">฿{{ game.price | number:'1.2-2' }}</span>
+                 <!-- <span class="game-price">฿{{ game.price | truncateNumber:2 }}</span> -->
+
                 <button 
                   class="add-cart-btn"
                   (click)="addToCart(game, $event)"
@@ -147,10 +149,11 @@
 
             </p>
             
-            <div class="game-footer">
-              <span class="game-price">฿{{ game.price | number:'1.2-2' }}</span>
+            <div class="game-footer" >
+              <span class="game-price" style="font-size: medium;">฿{{ game.price | number:'1.2-2' }}</span>
+               <!-- <span class="game-price"style="font-size: medium;">฿{{ game.price | truncateNumber:2 }}</span> -->
               <button 
-                class="add-cart-btn"
+                class="add-cart-btn" style="font-size: smaller;"
                 (click)="addToCart(game, $event)"
               >
                 Add to Cart

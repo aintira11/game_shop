@@ -1,0 +1,356 @@
+// cart.scss
+.cart-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+
+//   h1 {
+//     margin: 0;
+//     font-size: 32px;
+//     color: #2c3e50;
+//   }
+
+  
+    .profile-title {
+      font-size: 25px;
+      font-weight: 400;
+      color: #fff;
+      border-left: 4px solid #ffc107;
+      padding-left: 16px;
+      margin: 0;
+    }
+  
+}
+
+.item-count {
+  background: #3498db;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.cart-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 30px;
+}
+
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.select-all-bar {
+  background: #f8f9fa;
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+
+  .label-text {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 16px;
+  }
+
+  .selected-info {
+    color: #3498db;
+    margin-left: 5px;
+  }
+}
+
+.game-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  &.selected {
+    border-color: #3498db;
+    background: #f0f8ff;
+  }
+}
+
+// Custom Checkbox Style
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+
+    &:checked ~ .checkmark {
+      background-color: #3498db;
+      border-color: #3498db;
+
+      &:after {
+        display: block;
+      }
+    }
+  }
+
+  .checkmark {
+    height: 24px;
+    width: 24px;
+    background-color: white;
+    border: 2px solid #bdc3c7;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    flex-shrink: 0;
+
+    &:after {
+      content: "✓";
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      display: none;
+    }
+  }
+
+  &:hover .checkmark {
+    border-color: #3498db;
+  }
+}
+
+.game-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+.game-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.game-details {
+  flex: 1;
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    color: #2c3e50;
+  }
+
+  .game-price {
+    margin: 0;
+    color: #27ae60;
+    font-size: 18px;
+    font-weight: 700;
+  }
+}
+
+.game-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.btn-remove {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.3s;
+
+  &:hover {
+    background: #c0392b;
+  }
+}
+
+.cart-summary {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #ecf0f1;
+  font-size: 16px;
+  color: black;
+  &.total {
+    border-bottom: none;
+    border-top: 2px solid #3498db;
+    margin-top: 10px;
+    padding-top: 20px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+
+.total-price {
+  color: #27ae60;
+  font-size: 28px;
+}
+
+.btn-checkout {
+  width: 100%;
+//   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+background: #3498db;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #95a5a6;
+  }
+}
+
+.checkout-note {
+  text-align: center;
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  .empty-icon {
+    font-size: 120px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+  }
+
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+  }
+}
+
+.btn-browse {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+
+  &:hover {
+    background: #2980b9;
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #27ae60;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s;
+  z-index: 1000;
+  font-weight: 600;
+
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &.error {
+    background: #e74c3c;
+  }
+}
+
+@media (max-width: 968px) {
+  .cart-content {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-summary {
+    position: static;
+  }
+
+  .game-card {
+    flex-wrap: wrap;
+  }
+
+  .game-info {
+    width: 100%;
+  }
+
+  .game-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 39px;
+  }
+}

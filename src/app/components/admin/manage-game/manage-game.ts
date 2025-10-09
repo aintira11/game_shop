@@ -6,10 +6,13 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Category, Game } from '../../../config/model';
+import { TruncateNumberPipe } from '../../../config/truncate-number.pipe';
+
+
 
 @Component({
   selector: 'app-manage-game',
-  imports: [Header, FormsModule, CommonModule],
+  imports: [Header, FormsModule, CommonModule, TruncateNumberPipe],
   templateUrl: './manage-game.html',
   styleUrl: './manage-game.scss'
 })

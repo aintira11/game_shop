@@ -24,6 +24,9 @@ export class Header implements OnInit {
   profile(): void {
     this.router.navigate(['/profile']);
   }
+  goToCart(): void {
+    this.router.navigate(['/cart']);
+  }
   // gameshop(): void {
   //   this.router.navigate(['']);
   // }

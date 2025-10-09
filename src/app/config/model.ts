@@ -24,4 +24,13 @@ export interface Category {
   category_name: string
   created_at: string
 }
+
+export interface GameCartItem {
+  cart_item_id: number
+  cart_id: number
+  game_id: number
+  game_name: string
+  price: string
+  game_image: string
+}
   

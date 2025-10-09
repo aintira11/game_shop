@@ -26,7 +26,8 @@
           <h3 class="game-name">{{ game.game_name }}</h3>
           <p class="game-genre">Category: {{ game.category_name || 'ไม่ระบุ' }}</p>
           <p class="game-date">{{ game.release_date | date:'dd/MM/yyyy' }}</p>
-          <p class="game-price">{{ game.price | number:'1.0-0' }} บาท</p>
+          <!-- <p class="game-price"> ฿ {{ game.price | number:'1.0-0' }}</p> -->
+           <span class="game-price">฿{{ game.price | truncateNumber:2 }}</span>
         </div>
       </div>
     </div>
@@ -46,7 +47,7 @@
       <!-- Image Upload Section -->
       <div class="image-section">
         <div class="image-preview">
-          <img [src]="profileSrc || 'assets/placeholder-game.jpg'" alt="Game Image">
+          <img [src]="profileSrc || 'https://img.freepik.com/premium-vector/add-image-icon_194117-687.jpg'" alt="Game Image">
         </div>
         <button class="btn-upload" (click)="triggerFileInput()">Add a photo</button>
         <input 

@@ -2,12 +2,15 @@ import { Component, signal,OnInit  } from '@angular/core';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './service/auth.service';
+import { TruncateNumberPipe } from './config/truncate-number.pipe';
+
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet
     ,RouterModule
     ,CommonModule
+    ,TruncateNumberPipe
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'

@@ -1,9 +1,9 @@
 <header class="app-header">
-  <div class="brand" routerLink="/home">GameShop</div>
+  <div class="brand" routerLink="/" style="cursor: pointer;">GameShop</div>
   
   <!-- Navigation for logged in users -->
   <nav class="main-nav" *ngIf="datauser">
-    <button class="nav-btn" type="button">shopping cart</button>
+    <button class="nav-btn" type="button" (click)="goToCart()">shopping cart</button>
     <button class="nav-btn" type="button">Game library</button>
     <button class="nav-btn" type="button" (click)="profile()">Profile</button>
     <button class="nav-btn" type="button" (click)="logout()">Log out</button>
