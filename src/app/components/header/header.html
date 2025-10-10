@@ -4,7 +4,7 @@
   <!-- Navigation for logged in users -->
   <nav class="main-nav" *ngIf="datauser">
     <button class="nav-btn" type="button" (click)="goToCart()">shopping cart</button>
-    <button class="nav-btn" type="button">Game library</button>
+    <button class="nav-btn" type="button" (click)="goTolibrary()">Game library</button>
     <button class="nav-btn" type="button" (click)="profile()">Profile</button>
     <button class="nav-btn" type="button" (click)="logout()">Log out</button>
   </nav>

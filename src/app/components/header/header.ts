@@ -27,9 +27,9 @@ export class Header implements OnInit {
   goToCart(): void {
     this.router.navigate(['/cart']);
   }
-  // gameshop(): void {
-  //   this.router.navigate(['']);
-  // }
+  goTolibrary(): void {
+    this.router.navigate(['/library']);
+  }
 
 logout(): void {
   console.log("Logout clicked");

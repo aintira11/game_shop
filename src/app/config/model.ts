@@ -33,4 +33,13 @@ export interface GameCartItem {
   price: string
   game_image: string
 }
+
+export interface Promotion {
+  promotion_id: number
+  promotion_name: string
+  limit_promotion: number
+  discount_value: string
+  promotion_date: string
+  discount_type: string
+}
   

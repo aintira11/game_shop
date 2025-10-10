@@ -1,8 +1,134 @@
 <app-header></app-header>
+
 <div class="profile-page">
   <div class="profile-container">
+    <!-- Header -->
     <div class="profile-header">
       <h1 class="profile-title">Wallet</h1>
     </div>
+
+    <div class="wallet-content">
+      <!-- Left Section: Wallet Balance & Top-up -->
+      <div class="wallet-section">
+        <!-- Wallet Balance -->
+        <div class="balance-card">
+          <h2 class="section-label">Wallet balance</h2>
+          <div class="balance-amount">{{ walletBalance | number:'1.2-2' }}</div>
+        </div>
+
+        <!-- Top-up Section -->
+        <div class="topup-card">
+          <div class="topup-header">
+            <h3>Top up</h3>
+          </div>
+
+          <div class="topup-content">
+            <!-- Input Field -->
+            <div class="topup-input-group">
+              <label>Top Up</label>
+              <div class="input-wrapper">
+                <input 
+                  type="number" 
+                  [(ngModel)]="topupAmount"
+                  placeholder="Enter amount"
+                  [disabled]="isProcessing"
+                  min="10"
+                  max="50000"
+                />
+                <button 
+                  class="confirm-btn"
+                  (click)="confirmTopup()"
+                  [disabled]="isProcessing || !topupAmount"
+                >
+                  {{ isProcessing ? 'Processing...' : 'confirm' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Amount Buttons -->
+            <div class="quick-amounts">
+              <button 
+                *ngFor="let amount of quickAmounts"
+                class="amount-btn"
+                (click)="selectQuickAmount(amount)"
+                [disabled]="isProcessing"
+              >
+                {{ amount }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Checkout Button -->
+          <button class="checkout-btn" disabled>
+            Checkout
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Section: Transaction History -->
+      <div class="history-section">
+        <h2 class="history-title">Transaction History</h2>
+
+        <!-- Game Purchase History -->
+        <div class="history-group">
+          <h3 class="history-subtitle">&gt; Game purchase history</h3>
+          
+          <div class="transaction-list">
+            <div 
+              *ngFor="let transaction of getPurchaseTransactions()"
+              class="transaction-item"
+            >
+              <div class="transaction-info">
+                <div class="transaction-label">Total :</div>
+                <div class="transaction-value">฿{{ transaction.amount | number:'1.0-0' }}</div>
+              </div>
+              
+              <div class="transaction-info" *ngIf="transaction.promotion_name">
+                <div class="transaction-label">Discount :</div>
+                <div class="transaction-value">{{ transaction.promotion_name }}</div>
+              </div>
+              
+              <div class="transaction-info">
+                <div class="transaction-label">Game :</div>
+                <div class="transaction-value">{{ transaction.game_names || transaction.description }}</div>
+              </div>
+
+              <div class="transaction-date">{{ formatDate(transaction.created_at) }}</div>
+            </div>
+
+            <div *ngIf="getPurchaseTransactions().length === 0" class="no-transactions">
+              No purchase history
+            </div>
+          </div>
+        </div>
+
+        <!-- Top-up History -->
+        <div class="history-group">
+          <h3 class="history-subtitle">&gt; Top up history</h3>
+          
+          <div class="transaction-list">
+            <div 
+              *ngFor="let transaction of getTopupTransactions()"
+              class="transaction-item topup-item"
+            >
+              <div class="transaction-info">
+                <div class="transaction-label">Amount</div>
+                <div class="transaction-value topup-amount">฿{{ transaction.amount | number:'1.0-0' }}</div>
+              </div>
+              <div class="transaction-date">{{ formatDate(transaction.created_at) }}</div>
+            </div>
+
+            <div *ngIf="getTopupTransactions().length === 0" class="no-transactions">
+              No top-up history
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Toast Notification -->
+<div class="toast" [class.show]="showToast" [class.error]="toastType === 'error'">
+  {{ toastMessage }}
 </div>

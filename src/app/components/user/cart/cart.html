@@ -1,8 +1,12 @@
-<!-- cart.html -->
+
 <app-header></app-header>
 <div class="cart-container">
   <div class="cart-header">
-      <h1 class="profile-title">Profile</h1>
+    <div>
+      <h1 class="profile-title" style="margin-bottom: 5px;">Shopping Cart</h1>
+      <span class="balance-label">💰 Remaining Balance: </span>
+      <span class="balance-amount">฿{{ datauser?.wallet | number:'1.2-2' }}</span>
+    </div>
     <p class="item-count">{{ cartItems.length }} List</p>
   </div>
 
@@ -54,7 +58,7 @@
         <div class="game-actions">
           <button class="btn-remove" (click)="removeFromCart(item.game_id)">
             <span class="icon">🗑️</span>
-            Delect
+            Delete
           </button>
         </div>
       </div>
@@ -62,30 +66,127 @@
 
     <!-- Summary Section -->
     <div class="cart-summary">
+      <!-- เลือกโปรโมชั่น -->
+      <div class="promotion-section" *ngIf="promotions.length > 0">
+        <label class="promotion-label">🎁 Select Promotion</label>
+        <select 
+          class="promotion-select" 
+          [(ngModel)]="selectedPromotion"
+          (change)="onPromotionChange()"
+        >
+          <option [ngValue]="null">-- No promotion --</option>
+          <option 
+            *ngFor="let promo of promotions" 
+            [ngValue]="promo.promotion_id"
+          >
+            {{ promo.promotion_name }}
+            <ng-container *ngIf="promo.discount_type === '%'">
+              ({{ promo.discount_value }}%)
+            </ng-container>
+            <ng-container *ngIf="promo.discount_type === 'fixed'">
+              (฿{{ promo.discount_value }})
+            </ng-container>
+          </option>
+        </select>
+
+        <!-- รายละเอียดโปรโมชั่น -->
+        <div class="promotion-details" *ngIf="selectedPromotionDetails">
+          <div class="promo-info">
+            <span class="promo-icon">🎟️</span>
+            <div class="promo-text">
+              <p class="promo-name">
+                <strong>{{ selectedPromotionDetails.promotion_name }}</strong>
+              </p>
+              <p class="promo-discount">
+                <ng-container *ngIf="selectedPromotionDetails.discount_type === '%'">
+                  🏷️ Discount {{ selectedPromotionDetails.discount_value }}%
+                </ng-container>
+                <ng-container *ngIf="selectedPromotionDetails.discount_type === 'fixed'">
+                  🏷️ Discount ฿{{ selectedPromotionDetails.discount_value }}
+                </ng-container>
+              </p>
+              <p class="promo-limit">
+                📊 Remaining: {{ selectedPromotionDetails.limit_promotion }} times
+              </p>
+            </div>
+          </div>
+
+          <div class="promo-warning" *ngIf="!isPromotionValid">
+            ⚠️ This promotion has run out.
+          </div>
+
+          <!-- แสดงจำนวนเงินที่จะได้ส่วนลด -->
+          <div class="promo-discount-preview" *ngIf="isPromotionValid && discountAmount > 0">
+            <div class="discount-badge">
+              <span class="badge-icon">💰</span>
+              <div class="badge-content">
+                <span class="badge-label">You save</span>
+                <span class="badge-amount">฿{{ discountAmount.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-divider"></div>
+
+      <!-- สรุปราคา -->
       <div class="summary-row">
         <span>Number of games selected:</span>
-        <span>{{ selectedCount }} game</span>
+        <span>{{ selectedCount }} game{{ selectedCount !== 1 ? 's' : '' }}</span>
       </div>
+      
       <div class="summary-row">
-        <span>Total number of games:</span>
-        <span>{{ cartItems.length }} game</span>
+        <span>Total price:</span>
+        <span>฿{{ totalPrice.toFixed(2) }}</span>
       </div>
+      
+      <!-- ส่วนลด -->
+      <div class="summary-row discount" *ngIf="discountAmount > 0">
+        <span>
+          Discount
+          <span class="discount-detail" *ngIf="selectedPromotionDetails">
+            ({{ promotionDescription }})
+          </span>
+        </span>
+        <span class="discount-value">-฿{{ discountAmount.toFixed(2) }}</span>
+      </div>
+
       <div class="summary-row total">
-        <span>Total amount payable:</span>
-        <span class="total-price">฿{{ totalPrice.toFixed(2) }}</span>
+        <span>Total amount to be paid:</span>
+        <span class="total-price">฿{{ finalPrice.toFixed(2) }}</span>
+      </div>
+
+      <div class="balance-info">
+        <div class="balance-row">
+          <span style="color: black;">Remaining balance:</span>
+          <span class="balance-value">฿{{ datauser?.wallet | number:'1.2-2' }}</span>
+        </div>
+        <div class="balance-row after">
+          <span style="color: black;">Remaining after payment:</span>
+          <span 
+            class="balance-after"
+            [class.insufficient]="userBalance < finalPrice"
+          >
+            ฿{{ (userBalance - finalPrice).toFixed(2) }}
+          </span>
+        </div>
       </div>
       
       <button 
         class="btn-checkout" 
         (click)="proceedToCheckout()" 
-        [disabled]="isProcessing || selectedGames.size === 0"
+        [disabled]="isProcessing || selectedGames.size === 0 || !isPromotionValid || userBalance < finalPrice"
       >
-        <span *ngIf="!isProcessing">💳 Make payment ({{ selectedCount }} List)</span>
-        <span *ngIf="isProcessing">⏳ in progress...</span>
+        <span *ngIf="!isProcessing">💳 Make Payment ({{ selectedCount }} item{{ selectedCount !== 1 ? 's' : '' }})</span>
+        <span *ngIf="isProcessing">⏳ In progress...</span>
       </button>
 
       <p class="checkout-note" *ngIf="selectedGames.size === 0">
         Please select the game you wish to purchase.
+      </p>
+      <p class="checkout-note" *ngIf="selectedPromotion && !isPromotionValid">
+        This promotion cannot be used.
       </p>
     </div>
   </div>
@@ -93,10 +194,10 @@
   <ng-template #emptyCart>
     <div class="empty-cart">
       <div class="empty-icon">🛒</div>
-      <h2>ตะกร้าของคุณว่างเปล่า</h2>
-      <p>เพิ่มเกมที่คุณชอบลงในตะกร้าสินค้า</p>
+      <h2>Your cart is empty.</h2>
+      <p>Add your favorite games to your shopping cart.</p>
       <button class="btn-browse" (click)="goToStore()">
-        🎮 เลือกซื้อเกม
+        🎮 Buy a game
       </button>
     </div>
   </ng-template>
@@ -105,5 +206,44 @@
   <div class="toast" [class.show]="showToast" [class.error]="toastType === 'error'">
     {{ toastMessage }}
   </div>
-</div>
 
+  <!-- Insufficient Balance Popup -->
+  <!-- <div class="popup-overlay" *ngIf="showInsufficientBalancePopup" (click)="closeInsufficientBalancePopup()">
+    <div class="popup-content" (click)="$event.stopPropagation()">
+      <div class="popup-header">
+        <span class="popup-icon">⚠️</span>
+        <h2>Insufficient Balance</h2>
+      </div>
+      
+      <div class="popup-body">
+        <div class="balance-comparison">
+          <div class="comparison-row">
+            <span>Total amount to be paid:</span>
+            <span class="amount-needed">฿{{ finalPrice.toFixed(2) }}</span>
+          </div>
+          <div class="comparison-row">
+            <span>Remaining balance:</span>
+            <span class="amount-current">฿{{ datauser?.wallet | number:'1.2-2' }}</span>
+          </div>
+          <div class="comparison-row shortage">
+            <span>Missing amount:</span>
+            <span class="amount-shortage">฿{{ (finalPrice - userBalance).toFixed(2) }}</span>
+          </div>
+        </div>
+        
+        <p class="popup-message">
+          Please top up to continue the transaction.
+        </p>
+      </div>
+
+      <div class="popup-actions">
+        <button class="btn-secondary" (click)="closeInsufficientBalancePopup()">
+          Cancel
+        </button>
+        <button class="btn-primary" (click)="goToTopUp()">
+          💰 Top Up
+        </button>
+      </div>
+    </div>
+  </div> -->
+</div>

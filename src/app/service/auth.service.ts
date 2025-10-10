@@ -37,5 +37,11 @@ logout() {
   localStorage.removeItem('user');
 }
 
+updateWallet(newBalance: number) {
+  if (this.user) {
+    this.user.wallet = newBalance;
+    this.setUser(this.user); // อัปเดตข้อมูล user ที่เก็บใน localStorage 
+  }
+}
 
 }

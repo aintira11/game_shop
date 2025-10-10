@@ -5,21 +5,10 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Header } from "../../header/header";
-import { DataUser, GameCartItem } from '../../../config/model';
+import { DataUser, GameCartItem, Promotion } from '../../../config/model';
 import { AuthService } from '../../../service/auth.service';
 import { Constants } from '../../../config/constants';
 import { TruncateNumberPipe } from '../../../config/truncate-number.pipe';
-
-interface Promotion {
-  promotion_id: number;
-  promotion_name: string;
-  discount_percentage: number;
-  discount_amount: number;
-  min_purchase: number;
-  max_discount: number;
-  start_date: string;
-  end_date: string;
-}
 
 @Component({
   selector: 'app-cart',
@@ -33,7 +22,6 @@ export class Cart implements OnInit {
   selectedGames: Set<number> = new Set();
   promotions: Promotion[] = [];
   selectedPromotion: number | null = null;
-  userBalance: number = 0;
   
   totalPrice: number = 0;
   discountAmount: number = 0;
@@ -56,7 +44,6 @@ export class Cart implements OnInit {
     this.datauser = this.authService.getUser();
     this.loadCart();
     this.loadPromotions();
-    this.loadUserBalance();
   }
 
   loadCart() {
@@ -64,40 +51,26 @@ export class Cart implements OnInit {
       .subscribe({
         next: (data) => {
           this.cartItems = data;
+          console.log('Cart Items:', this.cartItems);
           this.selectedGames = new Set(data.map(item => item.game_id));
           this.calculateTotal();
         },
         error: (err) => {
           console.error('Error loading cart:', err);
-          this.showToastMessage('ไม่สามารถโหลดตะกร้าได้', 'error');
+          this.showToastMessage('Unable to load basket.', 'error');
         }
       });
   }
 
   loadPromotions() {
-    // เรียก API โปรโมชั่น (ปรับ endpoint ตามจริง)
-    this.http.get<Promotion[]>(`${this.constants.API_ENDPOINT}/promotions/active`)
+    this.http.get<Promotion[]>(`${this.constants.API_ENDPOINT}/cart/loadpromotion/${this.datauser?.user_id}`)
       .subscribe({
         next: (data) => {
           this.promotions = data;
+          console.log('Promotions:', this.promotions);
         },
         error: (err) => {
           console.error('Error loading promotions:', err);
-          // ไม่แสดง error เพราะโปรโมชั่นไม่จำเป็น
-        }
-      });
-  }
-
-  loadUserBalance() {
-    // เรียก API ยอดเงิน (ปรับ endpoint ตามจริง)
-    this.http.get<any>(`${this.constants.API_ENDPOINT}/user/balance/${this.datauser?.user_id}`)
-      .subscribe({
-        next: (data) => {
-          this.userBalance = data.balance || 0;
-        },
-        error: (err) => {
-          console.error('Error loading balance:', err);
-          this.userBalance = 0;
         }
       });
   }
@@ -142,20 +115,19 @@ export class Cart implements OnInit {
       const promotion = this.promotions.find(p => p.promotion_id === this.selectedPromotion);
       
       if (promotion) {
-        // ตรวจสอบว่าซื้อครบขั้นต่ำหรือไม่
-        if (this.totalPrice >= promotion.min_purchase) {
-          if (promotion.discount_percentage > 0) {
-            // ส่วนลดแบบเปอร์เซ็นต์
-            this.discountAmount = (this.totalPrice * promotion.discount_percentage) / 100;
-            
-            // จำกัดส่วนลดสูงสุด
-            if (promotion.max_discount > 0 && this.discountAmount > promotion.max_discount) {
-              this.discountAmount = promotion.max_discount;
-            }
-          } else if (promotion.discount_amount > 0) {
-            // ส่วนลดแบบจำนวนเงิน
-            this.discountAmount = promotion.discount_amount;
-          }
+        const discountValue = Number(promotion.discount_value);
+        
+        if (promotion.discount_type === '%') {
+          // ส่วนลดแบบเปอร์เซ็นต์
+          this.discountAmount = (this.totalPrice * discountValue) / 100;
+        } else if (promotion.discount_type === 'fixed') {
+          // ส่วนลดแบบจำนวนเงินคงที่
+          this.discountAmount = discountValue;
+        }
+
+        // ตรวจสอบไม่ให้ส่วนลดเกินราคารวม
+        if (this.discountAmount > this.totalPrice) {
+          this.discountAmount = this.totalPrice;
         }
       }
     }
@@ -177,37 +149,65 @@ export class Cart implements OnInit {
     return this.promotions.find(p => p.promotion_id === this.selectedPromotion);
   }
 
+  get promotionDescription(): string {
+    const promo = this.selectedPromotionDetails;
+    if (!promo) return '';
+    
+    if (promo.discount_type === '%') {
+      return `Discount ${promo.discount_value}%`;
+    } else if (promo.discount_type === 'fixed') {
+      return `Discount ฿${promo.discount_value}`;
+    }
+    return '';
+  }
+
+  get userBalance(): number {
+    return Number(this.datauser?.wallet) || 0;
+  }
+
   get isPromotionValid(): boolean {
     const promo = this.selectedPromotionDetails;
     if (!promo) return true;
-    return this.totalPrice >= promo.min_purchase;
+    
+    // ตรวจสอบว่ายังมีโปรโมชั่นเหลืออยู่หรือไม่
+    return promo.limit_promotion > 0;
   }
 
   removeFromCart(gameId: number) {
-    this.http.delete(`${this.constants.API_ENDPOINT}/cart/${this.datauser?.user_id}/${gameId}`)
+    // ใช้ cart_id ตัวแรกที่เจอ (ควรส่ง cart_id ที่ถูกต้องของเกมนั้นๆ)
+    const cartItem = this.cartItems.find(item => item.game_id === gameId);
+    if (!cartItem) return;
+
+    this.http.delete(`${this.constants.API_ENDPOINT}/cart/delectCart/${cartItem.cart_id}/${gameId}`)
       .subscribe({
         next: () => {
           this.cartItems = this.cartItems.filter(item => item.game_id !== gameId);
           this.selectedGames.delete(gameId);
           this.calculateTotal();
-          this.showToastMessage('ลบเกมออกจากตะกร้าแล้ว', 'success');
+          this.showToastMessage('Game has been removed from cart.', 'success');
         },
         error: (err) => {
           console.error('Error removing item:', err);
-          this.showToastMessage('ไม่สามารถลบเกมได้', 'error');
+          this.showToastMessage('Unable to delete game.', 'error');
         }
       });
   }
 
   proceedToCheckout() {
     if (this.selectedGames.size === 0) {
-      this.showToastMessage('กรุณาเลือกเกมที่ต้องการซื้อ', 'error');
+      this.showToastMessage('Please select the game you wish to purchase.', 'error');
       return;
     }
 
     // ตรวจสอบยอดเงิน
     if (this.userBalance < this.finalPrice) {
       this.showInsufficientBalancePopup = true;
+      return;
+    }
+
+    // ตรวจสอบว่าโปรโมชั่นยังใช้ได้หรือไม่
+    if (this.selectedPromotion && !this.isPromotionValid) {
+      this.showToastMessage('This promotion cannot be used.', 'error');
       return;
     }
 
@@ -219,43 +219,49 @@ export class Cart implements OnInit {
 
     const purchaseData = {
       user_id: this.datauser?.user_id,
+      cart_id: this.cartItems[0]?.cart_id,
+      promotion_id: this.selectedPromotion || null,
+      total_price: this.finalPrice, // ใช้ราคาหลังหักส่วนลด
       items: selectedItems.map(item => ({
         game_id: item.game_id,
-        quantity: 1,
-        price: item.price
-      })),
-      total_price: this.totalPrice,
-      discount_amount: this.discountAmount,
-      final_price: this.finalPrice,
-      promotion_id: this.selectedPromotion
+        game_price: Number(item.price)
+      }))
     };
 
-    this.http.post<any>(`${this.constants.API_ENDPOINT}/purchase`, purchaseData)
+    console.log('Purchase Data:', purchaseData);
+
+    this.http.post<any>(`${this.constants.API_ENDPOINT}/cart/buyGame`, purchaseData)
       .subscribe({
         next: (response) => {
-          this.showToastMessage('สั่งซื้อสำเร็จ!', 'success');
+          this.showToastMessage('Order successful!', 'success');
           setTimeout(() => {
-            this.router.navigate(['/payment', response.order_id]);
+            
+            // อัปเดตเฉพาะยอดเงินใน user ที่เก็บไว้
+            this.authService.updateWallet(response.remaining_balance);
+            // ไปหน้า Library
+            this.router.navigate(['/library']);
           }, 1500);
         },
         error: (err) => {
           console.error('Purchase error:', err);
-          this.showToastMessage('เกิดข้อผิดพลาดในการสั่งซื้อ', 'error');
+          const errorMessage = err.error?.message || 'An error occurred while ordering.';
+          this.showToastMessage(errorMessage, 'error');
           this.isProcessing = false;
         }
       });
   }
 
-  closeInsufficientBalancePopup() {
-    this.showInsufficientBalancePopup = false;
-  }
+  // closeInsufficientBalancePopup() {
+  //   this.showInsufficientBalancePopup = false;
+  // }
 
-  goToTopUp() {
-    this.router.navigate(['/topup']);
-  }
+  // goToTopUp() {
+  //   this.showInsufficientBalancePopup = false;
+  //   this.router.navigate(['/wallet']);
+  // }
 
   goToStore() {
-    this.router.navigate(['/store']);
+    this.router.navigate(['/']);
   }
 
   showToastMessage(message: string, type: 'success' | 'error') {

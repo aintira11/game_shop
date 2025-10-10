@@ -26,6 +26,12 @@ export class Home implements OnInit {
   selectedCategory: string = 'all';
   categories: Category[] = [];
 
+  //   isProcessing: boolean = false;
+  // showToast: boolean = false;
+  // toastMessage: string = '';
+  // toastType: 'success' | 'error' = 'success';
+  // showInsufficientBalancePopup: boolean = false;
+
   constructor(
     private http: HttpClient,
     private constants: Constants,
@@ -137,7 +143,13 @@ addToCart(game: Game, event: Event): void {
     next: (res: any) => {
       if (res.message === "คุณมีเกมนี้ในตะกร้าแล้ว") {
         alert('⚠️ เกมนี้อยู่ในตะกร้าของคุณแล้ว');
-      } else {
+        // this.showToastMessage('เกมนี้อยู่ในตะกร้าของคุณแล้ว!', 'error');
+      } 
+      if(res.message === "คุณได้ซื้อเกมนี้ไปแล้ว"){
+        alert('⚠️ คุณได้ซื้อเกมนี้ไปแล้ว');
+        // this.showToastMessage('คุณได้ซื้อเกมนี้ไปแล้ว!', 'error');
+      }
+      else{
         alert('✅ เพิ่มเกมลงตะกร้าสำเร็จ');
         
       }
@@ -148,5 +160,15 @@ addToCart(game: Game, event: Event): void {
     }
   });
 }
+
+  // showToastMessage(message: string, type: 'success' | 'error') {
+  //   this.toastMessage = message;
+  //   this.toastType = type;
+  //   this.showToast = true;
+
+  //   setTimeout(() => {
+  //     this.showToast = false;
+  //   }, 3000);
+  // }
 
 }
