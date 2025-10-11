@@ -43,3 +43,30 @@ export interface Promotion {
   discount_type: string
 }
   
+// Interfaces for Wallet Component
+export interface PromotionTransaction {
+  name: string;
+  discount_value: string;
+}
+
+export interface GameTransaction {
+  buy_id: number;
+  game_id: number;
+  game_name: string;
+  game_price: string;
+}
+
+export interface Transaction {
+  transaction_id: number;
+  amount: string;
+  type: 'deposit' | 'purchase';
+  transaction_date: string;
+  total_price?: string;
+  buy_date?: string;
+  promotion: PromotionTransaction | null;
+  games: GameTransaction[];
+}
+
+export interface TransactionResponse {
+  transactions: Transaction[];
+}

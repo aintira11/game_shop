@@ -1,23 +1,39 @@
-// wallet.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Header } from "../../header/header";
-import { DataUser } from '../../../config/model';
+import { DataUser, Transaction, TransactionResponse } from '../../../config/model';
 import { AuthService } from '../../../service/auth.service';
 import { Constants } from '../../../config/constants';
 
-interface Transaction {
-  transaction_id: number;
-  user_id: number;
-  transaction_type: 'topup' | 'purchase';
-  amount: number;
-  description: string;
-  created_at: string;
-  promotion_name?: string;
-  game_names?: string;
-}
+// Interface สำหรับโครงสร้างข้อมูลใหม่
+// interface Promotion {
+//   name: string;
+//   discount_value: string;
+// }
+
+// interface Game {
+//   buy_id: number;
+//   game_id: number;
+//   game_name: string;
+//   game_price: string;
+// }
+
+// interface Transaction {
+//   transaction_id: number;
+//   amount: string;
+//   type: 'deposit' | 'purchase';
+//   transaction_date: string;
+//   total_price?: string;
+//   buy_date?: string;
+//   promotion: Promotion | null;
+//   games: Game[];
+// }
+
+// interface TransactionResponse {
+//   transactions: Transaction[];
+// }
 
 @Component({
   selector: 'app-wallet',
@@ -30,6 +46,7 @@ export class Wallet implements OnInit {
   walletBalance: number = 0;
   topupAmount: string = '';
   transactions: Transaction[] = [];
+  expandedTransactionId: number | null = null; // เพิ่มตัวแปรนี้
   
   isProcessing: boolean = false;
   showToast: boolean = false;
@@ -53,13 +70,13 @@ export class Wallet implements OnInit {
   loadWalletBalance() {
     if (!this.datauser?.user_id) return;
 
-    this.http.get<{ wallet: number }>(`${this.constants.API_ENDPOINT}/wallet/balance/${this.datauser.user_id}`)
+    this.http.get<{ wallet: number }>(`${this.constants.API_ENDPOINT}/wallet/user/${this.datauser.user_id}`)
       .subscribe({
         next: (data) => {
           this.walletBalance = Number(data.wallet) || 0;
           // อัปเดต datauser
           if (this.datauser) {
-            this.datauser.wallet = this.walletBalance;
+            // this.datauser.wallet = this.walletBalance;
             this.authService.setUser(this.datauser);
           }
         },
@@ -73,10 +90,18 @@ export class Wallet implements OnInit {
   loadTransactionHistory() {
     if (!this.datauser?.user_id) return;
 
-    this.http.get<Transaction[]>(`${this.constants.API_ENDPOINT}/wallet/transactions/${this.datauser.user_id}`)
+    this.http.get<TransactionResponse>(`${this.constants.API_ENDPOINT}/wallet/user/transactions/${this.datauser.user_id}`)
       .subscribe({
         next: (data) => {
-          this.transactions = data;
+          // ตรวจสอบว่า response มี transactions array
+          if (data && Array.isArray(data.transactions)) {
+            this.transactions = data.transactions;
+          } else if (Array.isArray(data)) {
+            this.transactions = data;
+          } else {
+            this.transactions = [];
+          }
+
           console.log('Transactions:', this.transactions);
         },
         error: (err) => {
@@ -116,7 +141,7 @@ export class Wallet implements OnInit {
     };
 
     this.http.post<{ message: string; new_balance: number }>(
-      `${this.constants.API_ENDPOINT}/wallet/topup`,
+      `${this.constants.API_ENDPOINT}/wallet/wallet/deposit`,
       topupData
     ).subscribe({
       next: (response) => {
@@ -127,7 +152,7 @@ export class Wallet implements OnInit {
           this.datauser.wallet = this.walletBalance;
           this.authService.setUser(this.datauser);
         }
-
+        this.loadWalletBalance();
         this.topupAmount = '';
         this.loadTransactionHistory();
         this.showToastMessage(`Top-up successful! ฿${amount}`, 'success');
@@ -142,12 +167,41 @@ export class Wallet implements OnInit {
     });
   }
 
-  getPurchaseTransactions(): Transaction[] {
-    return this.transactions.filter(t => t.transaction_type === 'purchase');
+  getPurchaseTransactions() {
+    return Array.isArray(this.transactions)
+      ? this.transactions.filter(t => t.type === 'purchase')
+      : [];
   }
 
-  getTopupTransactions(): Transaction[] {
-    return this.transactions.filter(t => t.transaction_type === 'topup');
+  getTopupTransactions() {
+    return Array.isArray(this.transactions)
+      ? this.transactions.filter(t => t.type === 'deposit')
+      : [];
+  }
+
+  // เรียงรายการทั้งหมดตามเวลาล่าสุด
+  getAllTransactionsSorted(): Transaction[] {
+    if (!Array.isArray(this.transactions)) return [];
+    
+    return [...this.transactions].sort((a, b) => {
+      const dateA = new Date(a.transaction_date).getTime();
+      const dateB = new Date(b.transaction_date).getTime();
+      return dateB - dateA; // เรียงจากใหม่ไปเก่า
+    });
+  }
+
+  // method สำหรับ toggle รายละเอียด
+  toggleTransactionDetails(transactionId: number) {
+    if (this.expandedTransactionId === transactionId) {
+      this.expandedTransactionId = null; // ปิดถ้าคลิกซ้ำ
+    } else {
+      this.expandedTransactionId = transactionId; // เปิดรายการที่เลือก
+    }
+  }
+
+  // method สำหรับเช็คว่ารายการนี้ถูกขยายหรือไม่
+  isExpanded(transactionId: number): boolean {
+    return this.expandedTransactionId === transactionId;
   }
 
   formatDate(dateString: string): string {

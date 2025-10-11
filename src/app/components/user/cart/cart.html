@@ -2,10 +2,10 @@
 <app-header></app-header>
 <div class="cart-container">
   <div class="cart-header">
-    <div>
+    <div *ngIf="datauser">
       <h1 class="profile-title" style="margin-bottom: 5px;">Shopping Cart</h1>
       <span class="balance-label">💰 Remaining Balance: </span>
-      <span class="balance-amount">฿{{ datauser?.wallet | number:'1.2-2' }}</span>
+      <span class="balance-amount">฿{{ datauser.wallet | number:'1.2-2' }}</span>
     </div>
     <p class="item-count">{{ cartItems.length }} List</p>
   </div>

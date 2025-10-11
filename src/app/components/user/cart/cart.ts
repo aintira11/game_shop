@@ -42,6 +42,7 @@ export class Cart implements OnInit {
 
   ngOnInit() {
     this.datauser = this.authService.getUser();
+    console.log('User Data:', this.datauser);
     this.loadCart();
     this.loadPromotions();
   }

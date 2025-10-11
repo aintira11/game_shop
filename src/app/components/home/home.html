@@ -2,44 +2,12 @@
 
 <div class="search-page">
   <div class="search-container">
-    <!-- Search Header -->
-    <div class="search-header">
-      <h1 class="page-title">Search Games</h1>
-      
-      <!-- Search Bar -->
-      <div class="search-bar-wrapper">
-        <div class="search-input-group">
-          <input 
-            type="text" 
-            class="search-input" 
-            [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()"
-            placeholder="Search for games..."
-          />
-          <button class="search-btn" (click)="onSearch()">
-            <span class="search-icon">🔍</span>
-            Search
-          </button>
-        </div>
 
-<!-- Category Filter -->
-<div class="filter-group">
-  <label class="filter-label">Category:</label>
-  <select 
-    class="category-select" 
-    [(ngModel)]="selectedCategory"
-    (change)="onCategoryChange()"
-  >
-    <option value="all">All Categories</option>
-    <option *ngFor="let category of categories" [value]="category.category_id">
-  {{ category.category_name }}
-</option>
+     <!-- Search Header -->
 
-  </select>
-</div>
 
-      </div>
-    </div>
+
+
 
     <!-- Error Message -->
     <div *ngIf="errorMessage" class="error-banner">
@@ -105,6 +73,47 @@
           </div>
         </div>
       </div>
+
+      <hr>
+      <br><br>
+          <!-- Search Header -->
+    <div class="search-header">
+      <h1 class="page-title">Search Games</h1>
+      
+      <!-- Search Bar -->
+      <div class="search-bar-wrapper">
+        <div class="search-input-group">
+          <input 
+            type="text" 
+            class="search-input" 
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()"
+            placeholder="Search for games..."
+          />
+          <button class="search-btn" (click)="onSearch()">
+            <span class="search-icon">🔍</span>
+            Search
+          </button>
+        </div>
+
+<!-- Category Filter -->
+<div class="filter-group">
+  <label class="filter-label">Category:</label>
+  <select 
+    class="category-select" 
+    [(ngModel)]="selectedCategory"
+    (change)="onCategoryChange()"
+  >
+    <option value="all">All Categories</option>
+    <option *ngFor="let category of categories" [value]="category.category_id">
+  {{ category.category_name }}
+</option>
+
+  </select>
+</div>
+
+      </div>
+    </div>
 
       <!-- All Games Section -->
       <div class="all-games-section">

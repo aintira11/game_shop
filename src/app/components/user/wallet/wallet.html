@@ -68,60 +68,106 @@
       <!-- Right Section: Transaction History -->
       <div class="history-section">
         <h2 class="history-title">Transaction History</h2>
+        
+        <!-- All Transactions (Sorted by Latest) -->
+        <div class="transaction-list" *ngIf="getAllTransactionsSorted().length > 0">
+          <div 
+            *ngFor="let transaction of getAllTransactionsSorted()" 
+            class="transaction-item"
+            [ngClass]="{
+              'purchase-item': transaction.type === 'purchase',
+              'topup-item': transaction.type === 'deposit',
+              'expanded': isExpanded(transaction.transaction_id)
+            }"
+            [style.cursor]="transaction.type === 'purchase' ? 'pointer' : 'default'"
+            (click)="transaction.type === 'purchase' ? toggleTransactionDetails(transaction.transaction_id) : null"
+          >
+            <!-- Purchase Transaction -->
+            <ng-container *ngIf="transaction.type === 'purchase'">
+              <div class="transaction-header">
+                <div class="transaction-info">
+                  <span class="transaction-label">Transaction Type</span>
+                  <span class="transaction-value">Game Purchase</span>
+                </div>
+                <div class="transaction-info">
+                  <span class="transaction-label">Amount</span>
+                  <span class="transaction-value purchase-amount">{{ transaction.amount }}</span>
+                </div>
+                <div class="transaction-info">
+                  <span class="transaction-label">Date</span>
+                  <span class="transaction-value">{{ formatDate(transaction.transaction_date) }}</span>
+                </div>
+              </div>
 
-        <!-- Game Purchase History -->
-        <div class="history-group">
-          <h3 class="history-subtitle">&gt; Game purchase history</h3>
-          
-          <div class="transaction-list">
-            <div 
-              *ngFor="let transaction of getPurchaseTransactions()"
-              class="transaction-item"
-            >
+              <!-- Expandable Details -->
+              <div class="transaction-details" *ngIf="isExpanded(transaction.transaction_id)">
+                <div class="details-divider"></div>
+                
+                <!-- Games List -->
+                <div class="games-section">
+                  <div class="detail-label">Games Purchased:</div>
+                  <div class="games-list">
+                    <div *ngFor="let game of transaction.games" class="game-item">
+                      <div class="game-info">
+                        <span class="game-name">{{ game.game_name }}</span>
+                        <span class="game-price">฿{{ game.game_price }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Promotion -->
+                <div class="promotion-section" *ngIf="transaction.promotion">
+                  <div class="detail-label">Promotion Used:</div>
+                  <div class="promotion-badge">
+                    <div class="promotion-info">
+                      <span class="promotion-name">{{ transaction.promotion.name }}</span>
+                      <span class="promotion-discount">-{{ transaction.promotion.discount_value }}%</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="promotion-section" *ngIf="!transaction.promotion">
+                  <div class="detail-label">Promotion:</div>
+                  <div class="promotion-value no-promotion">No promotion used</div>
+                </div>
+
+                <!-- Total Price -->
+                <div class="total-section" *ngIf="transaction.total_price">
+                  <div class="detail-label">Total Price:</div>
+                  <div class="total-value">฿{{ transaction.total_price }}</div>
+                </div>
+              </div>
+
+              <div class="expand-indicator">
+                <span *ngIf="!isExpanded(transaction.transaction_id)">▼ Click for details</span>
+                <span *ngIf="isExpanded(transaction.transaction_id)">▲ Hide details</span>
+              </div>
+            </ng-container>
+
+            <!-- Deposit Transaction -->
+            <ng-container *ngIf="transaction.type === 'deposit'">
               <div class="transaction-info">
-                <div class="transaction-label">Total :</div>
-                <div class="transaction-value">฿{{ transaction.amount | number:'1.0-0' }}</div>
+                <span class="transaction-label">Transaction Type</span>
+                <span class="transaction-value">Wallet Top-up</span>
               </div>
-              
-              <div class="transaction-info" *ngIf="transaction.promotion_name">
-                <div class="transaction-label">Discount :</div>
-                <div class="transaction-value">{{ transaction.promotion_name }}</div>
-              </div>
-              
               <div class="transaction-info">
-                <div class="transaction-label">Game :</div>
-                <div class="transaction-value">{{ transaction.game_names || transaction.description }}</div>
+                <span class="transaction-label">Amount</span>
+                <span class="transaction-value topup-amount">+฿{{ transaction.amount }}</span>
               </div>
-
-              <div class="transaction-date">{{ formatDate(transaction.created_at) }}</div>
-            </div>
-
-            <div *ngIf="getPurchaseTransactions().length === 0" class="no-transactions">
-              No purchase history
-            </div>
+              <div class="transaction-info">
+                  <span class="transaction-label">Date</span>
+                  <span class="transaction-value">{{ formatDate(transaction.transaction_date) }}</span>
+                </div>
+              <!-- <div class="transaction-date">
+                {{ formatDate(transaction.transaction_date) }}
+              </div> -->
+            </ng-container>
           </div>
         </div>
 
-        <!-- Top-up History -->
-        <div class="history-group">
-          <h3 class="history-subtitle">&gt; Top up history</h3>
-          
-          <div class="transaction-list">
-            <div 
-              *ngFor="let transaction of getTopupTransactions()"
-              class="transaction-item topup-item"
-            >
-              <div class="transaction-info">
-                <div class="transaction-label">Amount</div>
-                <div class="transaction-value topup-amount">฿{{ transaction.amount | number:'1.0-0' }}</div>
-              </div>
-              <div class="transaction-date">{{ formatDate(transaction.created_at) }}</div>
-            </div>
-
-            <div *ngIf="getTopupTransactions().length === 0" class="no-transactions">
-              No top-up history
-            </div>
-          </div>
+        <!-- No Transactions -->
+        <div *ngIf="transactions.length === 0" class="no-transactions">
+          No transactions yet
         </div>
       </div>
     </div>
