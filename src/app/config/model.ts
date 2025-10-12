@@ -56,7 +56,7 @@ export interface GameTransaction {
   game_price: string;
 }
 
-export interface Transaction {
+export interface Transactionmodel {
   transaction_id: number;
   amount: string;
   type: 'deposit' | 'purchase';
@@ -68,5 +68,5 @@ export interface Transaction {
 }
 
 export interface TransactionResponse {
-  transactions: Transaction[];
+  transactions: Transactionmodel[];
 }

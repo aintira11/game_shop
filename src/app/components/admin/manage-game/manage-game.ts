@@ -233,33 +233,27 @@ export class ManageGame implements OnInit {
     }
   }
 
-  searchGames(): void {
-    if (!this.searchQuery.trim()) {
-      this.loadGames();
-      return;
-    }
-
-    this.isLoading = true;
-    this.http.get<{ games: Game[] }>(`${this.Constants.API_ENDPOINT}/game/games/search`, {
-      params: {
-        query: this.searchQuery
-      }
-    }).subscribe({
-      next: (response) => {
-        this.games = response.games;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error searching games:', error);
-        alert('เกิดข้อผิดพลาดในการค้นหา');
-        this.isLoading = false;
-      }
-    });
-  }
-
   getFilteredGames(): Game[] {
+  // ถ้าไม่มีการค้นหา (searchQuery เป็นค่าว่าง) ให้แสดงเกมทั้งหมด
+  if (!this.searchQuery || !this.searchQuery.trim()) {
     return this.games;
   }
+
+  // แปลงคำค้นหาเป็นตัวพิมพ์เล็กเพื่อการเปรียบเทียบที่ไม่สน case-sensitive
+  const lowerCaseQuery = this.searchQuery.toLowerCase();
+
+  // กรอง (filter) อาร์เรย์ games
+  return this.games.filter(game => {
+    // ตรวจสอบว่าชื่อเกม (game_name) มีคำค้นหาอยู่หรือไม่
+    const nameMatch = game.game_name && game.game_name.toLowerCase().includes(lowerCaseQuery);
+    
+    // ตรวจสอบว่าชื่อหมวดหมู่ (category_name) มีคำค้นหาอยู่หรือไม่
+    const categoryMatch = game.category_name && game.category_name.toLowerCase().includes(lowerCaseQuery);
+
+    // คืนค่าเกมที่ตรงเงื่อนไข (ชื่อเกม หรือ ชื่อหมวดหมู่)
+    return nameMatch || categoryMatch;
+  });
+}
 
   formatDate(date: string): string {
     if (!date) return '';

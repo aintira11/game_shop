@@ -1,1 +1,234 @@
-<p>transaction works!</p>
+<app-header></app-header>
+
+<div class="profile-page">
+  <div class="profile-container">
+    <!-- Header -->
+    <div class="profile-header">
+      <h1 class="profile-title">Transaction History Management</h1>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+      <!-- User Selection - Dual Method -->
+      <div class="user-selection-container">
+        <!-- Search User -->
+        <div class="filter-group">
+          <label class="filter-label">🔍 Search User by Username or Email:</label>
+          <div class="user-search-wrapper">
+            <input 
+              type="text" 
+              class="user-search-input"
+              [(ngModel)]="userSearchQuery"
+              (input)="onUserSearch()"
+              (focus)="showAllUsersOnFocus()"
+              placeholder="Type username or email to search..."
+            />
+            <button 
+              class="clear-user-btn" 
+              *ngIf="selectedUserId"
+              (click)="clearUserSelection()"
+              title="Clear selection"
+            >
+              ✕
+            </button>
+            
+            <!-- User Dropdown -->
+            <div class="user-dropdown" *ngIf="showUserDropdown && !selectedUserId">
+              <div 
+                *ngFor="let user of filteredUsers" 
+                class="user-dropdown-item"
+                (click)="selectUser(user)"
+              >
+                <div class="user-dropdown-info">
+                  <div class="user-dropdown-name">{{ user.username }}</div>
+                  <div class="user-dropdown-email">{{ user.email }}</div>
+                </div>
+                <div class="user-dropdown-id">ID: {{ user.user_id }}</div>
+              </div>
+              <div class="user-dropdown-empty" *ngIf="filteredUsers.length === 0">
+                No users found
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OR Divider -->
+        <!-- <div class="or-divider">
+          <span>OR</span>
+        </div>
+        <br> -->
+
+        <!-- Select User Dropdown -->
+        <!-- <div class="filter-group">
+          <label class="filter-label">📋 Select User from List:</label>
+          <select 
+            class="user-select" 
+            [(ngModel)]="selectedUserId"
+            (change)="onUserChange()"
+          >
+            <option [value]="null">-- Select a user --</option>
+            <option *ngFor="let user of users" [value]="user.user_id">
+              {{ user.username }} ({{ user.email }})
+            </option>
+          </select>
+        </div> -->
+      </div>
+
+      <!-- Search and Filter (Only show when user is selected) -->
+      <div class="search-filters" *ngIf="selectedUserId">
+        <div class="filter-group">
+          <label class="filter-label">Filter by Type:</label>
+          <select 
+            class="type-select" 
+            [(ngModel)]="filterType"
+            (change)="onFilterChange()"
+          >
+            <option value="all">All ({{ getTransactionCount('all') }})</option>
+            <option value="deposit">Top-up ({{ getTransactionCount('deposit') }})</option>
+            <option value="purchase">Purchase ({{ getTransactionCount('purchase') }})</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading...</p>
+    </div>
+
+    <!-- User Info Card -->
+    <div class="user-info-card" *ngIf="selectedUser && !isLoading">
+      <div class="user-info-header">
+        <h3>📊 User Information</h3>
+      </div>
+      <div class="user-info-content">
+        <div class="info-item">
+          <span class="info-label">User ID:</span>
+          <span class="info-value">{{ selectedUser.user_id }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Username:</span>
+          <span class="info-value">{{ selectedUser.username }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Email:</span>
+          <span class="info-value">{{ selectedUser.email }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Total Transactions:</span>
+          <span class="info-value highlight">{{ filteredTransactions.length }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transaction List -->
+    <div class="transaction-section" *ngIf="selectedUserId && !isLoading">
+      <div class="section-header">
+        <h2 class="section-title">Transaction History</h2>
+        <div class="results-info">
+          <p>Showing {{ filteredTransactions.length }} transaction(s)</p>
+        </div>
+      </div>
+
+      <!-- No Transactions -->
+      <div *ngIf="filteredTransactions.length === 0" class="no-transactions">
+        <p>No transactions found for this user.</p>
+      </div>
+
+      <!-- Transaction Cards -->
+      <div class="transaction-list" *ngIf="filteredTransactions.length > 0">
+        <div 
+          *ngFor="let transaction of filteredTransactions" 
+          class="transaction-card"
+          [ngClass]="{
+            'purchase-card': transaction.type === 'purchase',
+            'deposit-card': transaction.type === 'deposit',
+            'expanded': isExpanded(transaction.transaction_id)
+          }"
+          [style.cursor]="transaction.type === 'purchase' ? 'pointer' : 'default'"
+          (click)="transaction.type === 'purchase' ? toggleTransactionDetails(transaction.transaction_id) : null"
+        >
+          <!-- Transaction Header -->
+          <div class="transaction-header">
+            <div class="transaction-main-info">
+              <div class="transaction-type-badge" 
+                   [class.deposit-badge]="transaction.type === 'deposit'"
+                   [class.purchase-badge]="transaction.type === 'purchase'">
+                {{ transaction.type === 'deposit' ? '💰 Top-up' : '🎮 Purchase' }}
+              </div>
+              <div class="transaction-id">
+                ID: #{{ transaction.transaction_id }}
+              </div>
+            </div>
+            
+            <div class="transaction-amount" 
+                 [class.positive]="transaction.type === 'deposit'"
+                 [class.negative]="transaction.type === 'purchase'">
+              {{ transaction.type === 'deposit' ? '+' : '' }}฿{{ transaction.amount }}
+            </div>
+          </div>
+
+          <div class="transaction-meta">
+            <div class="meta-item">
+              <span class="meta-label">Date:</span>
+              <span class="meta-value">{{ formatDate(transaction.transaction_date) }}</span>
+            </div>
+          </div>
+
+          <!-- Expandable Details (Purchase only) -->
+          <div class="transaction-details" *ngIf="transaction.type === 'purchase' && isExpanded(transaction.transaction_id)">
+            <div class="details-divider"></div>
+            
+            <!-- Games List -->
+            <div class="games-section">
+              <div class="detail-label">Games Purchased:</div>
+              <div class="games-list">
+                <div *ngFor="let game of transaction.games" class="game-item">
+                  <div class="game-info">
+                    <span class="game-name">{{ game.game_name }}</span>
+                    <span class="game-price">฿{{ game.game_price }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Promotion -->
+            <div class="promotion-section" *ngIf="transaction.promotion">
+              <div class="detail-label">Promotion Used:</div>
+              <div class="promotion-badge">
+                <div class="promotion-info">
+                  <span class="promotion-name">{{ transaction.promotion.name }}</span>
+                  <span class="promotion-discount">-{{ transaction.promotion.discount_value }}%</span>
+                </div>
+              </div>
+            </div>
+            <div class="promotion-section" *ngIf="!transaction.promotion">
+              <div class="detail-label">Promotion:</div>
+              <div class="promotion-value no-promotion">No promotion used</div>
+            </div>
+
+            <!-- Total Price -->
+            <div class="total-section" *ngIf="transaction.total_price">
+              <div class="detail-label">Total Price:</div>
+              <div class="total-value">฿{{ transaction.total_price }}</div>
+            </div>
+          </div>
+
+          <div class="expand-indicator" *ngIf="transaction.type === 'purchase'">
+            <span *ngIf="!isExpanded(transaction.transaction_id)">▼ Click for details</span>
+            <span *ngIf="isExpanded(transaction.transaction_id)">▲ Hide details</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Welcome Message (No user selected) -->
+    <div class="welcome-section" *ngIf="!selectedUserId && !isLoading">
+      <div class="welcome-card">
+        <h2>👋 Welcome to Transaction Management</h2>
+        <p>Please select a user using the search bar or dropdown above to view their transaction history.</p>
+      </div>
+    </div>
+  </div>
+</div>

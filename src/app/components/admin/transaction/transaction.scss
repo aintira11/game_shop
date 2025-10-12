@@ -1,0 +1,644 @@
+.profile-page {
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  padding: 40px 150px;
+
+  @media (max-width: 1024px) {
+    padding: 40px 40px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 20px 20px;
+  }
+}
+
+.profile-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  margin-bottom: 30px;
+
+  .profile-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #fff;
+    border-left: 4px solid #ffc107;
+    padding-left: 16px;
+    margin: 0;
+  }
+}
+
+// Filter Section
+.filter-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+
+  .filter-group {
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .filter-label {
+      display: block;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .user-select,
+    .type-select,
+    .search-input,
+    .user-search-input {
+      width: 100%;
+      background: #1a1a1a;
+      border: 2px solid #333;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        border-color: #ffc107;
+      }
+
+      option {
+        background: #1a1a1a;
+      }
+    }
+
+    .search-input,
+    .user-search-input {
+      &::placeholder {
+        color: #666;
+      }
+    }
+
+    // User Search Wrapper
+    .user-search-wrapper {
+      position: relative;
+      width: 97%;
+
+    //   .user-search-input {
+    //     padding-right: 45px; // Space for clear button
+    //   }
+
+      .clear-user-btn {
+        position: absolute;
+        right: 1px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateY(-50%) rotate(90deg);
+        }
+      }
+
+      // User Dropdown
+      .user-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        right: 0;
+        background: #1a1a1a;
+        border: 2px solid #ffc107;
+        border-radius: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 100;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+        // Custom Scrollbar
+        &::-webkit-scrollbar {
+          width: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #ffc107;
+          border-radius: 10px;
+
+          &:hover {
+            background: #ffb300;
+          }
+        }
+
+        .user-dropdown-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 16px;
+          cursor: pointer;
+          transition: background 0.2s ease;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &:hover {
+            background: rgba(255, 193, 7, 0.1);
+          }
+
+          .user-dropdown-info {
+            flex: 1;
+
+            .user-dropdown-name {
+              font-size: 14px;
+              font-weight: 600;
+              color: #fff;
+              margin-bottom: 4px;
+            }
+
+            .user-dropdown-email {
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.6);
+            }
+          }
+
+          .user-dropdown-id {
+            font-size: 12px;
+            color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+          }
+        }
+
+        .user-dropdown-empty {
+          padding: 20px;
+          text-align: center;
+          color: rgba(255, 255, 255, 0.5);
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .search-filters {
+    width: 30%;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+
+    .filter-group {
+      margin-bottom: 0;
+    }
+  }
+
+  .search-btn {
+    margin-top: 8px;
+    background: #ffc107;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #ffb300;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Loading
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #fff;
+
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #333;
+    border-top-color: #ffc107;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// User Info Card
+.user-info-card {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+
+  .user-info-header {
+    margin-bottom: 16px;
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffc107;
+      margin: 0;
+    }
+  }
+
+  .user-info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+
+      .info-label {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .info-value {
+        font-size: 14px;
+        color: #fff;
+        font-weight: 600;
+
+        &.highlight {
+          color: #ffc107;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+// Transaction Section
+.transaction-section {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0;
+    }
+
+    .results-info {
+      font-size: 14px;
+      color: #999;
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.transaction-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+
+  &.purchase-card {
+    cursor: pointer;
+
+    &:hover {
+      border-color: rgba(100, 181, 246, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &.expanded {
+      border-color: #ffc107;
+      background: rgba(255, 193, 7, 0.05);
+    }
+  }
+
+  &.deposit-card {
+    border-color: rgba(76, 175, 80, 0.3);
+  }
+
+  .transaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .transaction-main-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .transaction-type-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+
+        &.deposit-badge {
+          background: rgba(76, 175, 80, 0.2);
+          color: #4caf50;
+          border: 1px solid rgba(76, 175, 80, 0.4);
+        }
+
+        &.purchase-badge {
+          background: rgba(100, 181, 246, 0.2);
+          color: #64b5f6;
+          border: 1px solid rgba(100, 181, 246, 0.4);
+        }
+      }
+
+      .transaction-id {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    .transaction-amount {
+      font-size: 24px;
+      font-weight: 700;
+
+      &.positive {
+        color: #4caf50;
+      }
+
+      &.negative {
+        color: #f44336;
+      }
+    }
+  }
+
+  .transaction-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    .meta-item {
+      display: flex;
+      gap: 8px;
+
+      .meta-label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .meta-value {
+        font-size: 13px;
+        color: #fff;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Transaction Details (expandable)
+  .transaction-details {
+    margin-top: 16px;
+    padding-top: 16px;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .details-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 16px;
+  }
+
+  .games-section,
+  .promotion-section,
+  .total-section {
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .detail-label {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .game-item {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .game-name {
+      font-size: 14px;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .game-price {
+      font-size: 14px;
+      color: #ffc107;
+      font-weight: 600;
+    }
+  }
+
+  .promotion-badge {
+    display: inline-block;
+  }
+
+  .promotion-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 6px;
+
+    .promotion-name {
+      font-size: 14px;
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    .promotion-discount {
+      font-size: 13px;
+      color: #fff;
+      background: #4caf50;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+  }
+
+  .promotion-value {
+    font-size: 14px;
+    color: #4caf50;
+    font-weight: 500;
+    padding: 6px 12px;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 4px;
+    display: inline-block;
+
+    &.no-promotion {
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.03);
+    }
+  }
+
+  .total-section {
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .total-value {
+    font-size: 16px;
+    color: #ffc107;
+    font-weight: 600;
+  }
+
+  .expand-indicator {
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 12px;
+    pointer-events: none;
+
+    span {
+      display: inline-block;
+      transition: color 0.2s;
+    }
+  }
+
+  &:hover .expand-indicator span {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+// No Transactions
+.no-transactions {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+
+  p {
+    margin: 0;
+  }
+}
+
+// Welcome Section
+.welcome-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+
+  .welcome-card {
+    text-align: center;
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    max-width: 600px;
+
+    h2 {
+      font-size: 28px;
+      color: #ffc107;
+      margin: 0 0 16px 0;
+    }
+
+    p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 0;
+      line-height: 1.6;
+    }
+  }
+}

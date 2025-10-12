@@ -22,7 +22,7 @@ export class Header implements OnInit {
   }
 
   Transaction(): void {
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/transation']);
   }
   // gameshop(): void {
   //   this.router.navigate(['']);

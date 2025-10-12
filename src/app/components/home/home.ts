@@ -9,7 +9,6 @@ import { Category, Game } from '../../config/model';
 import { TruncateNumberPipe } from '../../config/truncate-number.pipe';
 import { AuthService } from '../../service/auth.service';
 
-
 @Component({
   selector: 'app-home',
   imports: [CommonModule, Header, FormsModule, TruncateNumberPipe],
@@ -26,11 +25,8 @@ export class Home implements OnInit {
   selectedCategory: string = 'all';
   categories: Category[] = [];
 
-  //   isProcessing: boolean = false;
-  // showToast: boolean = false;
-  // toastMessage: string = '';
-  // toastType: 'success' | 'error' = 'success';
-  // showInsufficientBalancePopup: boolean = false;
+  selectedGame: Game | null = null;
+  showGameModal: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -64,7 +60,6 @@ export class Home implements OnInit {
 
       this.games = response.games || response || [];
       this.filteredGames = [...this.games];
-      // console.log('Games:', this.filterGames);
     } catch (error: any) {
       console.error('Load games error:', error);
       this.errorMessage = 'ไม่สามารถโหลดข้อมูลเกมได้';
@@ -76,10 +71,10 @@ export class Home implements OnInit {
   // โหลดเกมยอดนิยม
   async loadPopularGames(): Promise<void> {
     try {
-    const apiUrl = `${this.constants.API_ENDPOINT}/games/bestseller`;
-    const response: any = await this.http.get(apiUrl).toPromise();
-    this.popularGames = response.popularGames || response || [];
-    console.log('popularGames:', this.popularGames);
+      const apiUrl = `${this.constants.API_ENDPOINT}/games/bestseller`;
+      const response: any = await this.http.get(apiUrl).toPromise();
+      this.popularGames = response.popularGames || response || [];
+      console.log('popularGames:', this.popularGames);
     } catch (error: any) {
       console.error('Load popular games error:', error);
     }
@@ -97,21 +92,21 @@ export class Home implements OnInit {
 
   // ฟังก์ชันกรองข้อมูล
   filterGames(): void {
-  let filtered = [...this.games];
+    let filtered = [...this.games];
 
-  if (this.searchQuery.trim()) {
-    const query = this.searchQuery.toLowerCase();
-    filtered = filtered.filter(game =>
-      game.game_name.toLowerCase().includes(query)
-    );
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(game =>
+        game.game_name.toLowerCase().includes(query)
+      );
+    }
+
+    if (this.selectedCategory !== 'all') {
+      filtered = filtered.filter(game => game.category_id === +this.selectedCategory);
+    }
+
+    this.filteredGames = filtered;
   }
-
-  if (this.selectedCategory !== 'all') {
-    filtered = filtered.filter(game => game.category_id === +this.selectedCategory);
-  }
-
-  this.filteredGames = filtered;
-}
 
   // คืนชื่อ Category จาก id
   getCategoryNameById(categoryId: string): string {
@@ -119,56 +114,67 @@ export class Home implements OnInit {
     return category ? category.category_name : '';
   }
 
-  viewGameDetail(gameId: number): void {
-    this.router.navigate(['/game', gameId]);
-  }
-
-addToCart(game: Game, event: Event): void {
-  event.stopPropagation();
-
-  const user_id = this.authService.getUser();
- // ดึง user_id จาก localStorage หรือ session
-  if (!user_id) {
-    alert('กรุณาเข้าสู่ระบบก่อนเพิ่มลงตะกร้า');
-    return;
-  }
-
-  const payload = {
-    user_id: user_id.user_id,
-    game_id: game.game_id
-  };
-
-  // เรียก API เพิ่มลงตะกร้า
-  this.http.post(`${this.constants.API_ENDPOINT}/cart/gametocart`, payload).subscribe({
-    next: (res: any) => {
-      if (res.message === "คุณมีเกมนี้ในตะกร้าแล้ว") {
-        alert('⚠️ เกมนี้อยู่ในตะกร้าของคุณแล้ว');
-        // this.showToastMessage('เกมนี้อยู่ในตะกร้าของคุณแล้ว!', 'error');
-      } 
-      if(res.message === "คุณได้ซื้อเกมนี้ไปแล้ว"){
-        alert('⚠️ คุณได้ซื้อเกมนี้ไปแล้ว');
-        // this.showToastMessage('คุณได้ซื้อเกมนี้ไปแล้ว!', 'error');
-      }
-      else{
-        alert('✅ เพิ่มเกมลงตะกร้าสำเร็จ');
-        
-      }
-    },
-    error: (err) => {
-      console.error('Add to cart error:', err);
-      alert('❌ เกิดข้อผิดพลาดระหว่างเพิ่มลงตะกร้า');
+  // เปิด Modal แสดงรายละเอียดเกม
+  viewGameDetail(gameId: number, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
     }
-  });
-}
+    
+    const game = this.games.find(g => g.game_id === gameId) || 
+                 this.popularGames.find(g => g.game_id === gameId);
+    
+    if (game) {
+      this.selectedGame = game;
+      this.showGameModal = true;
+      document.body.style.overflow = 'hidden'; // ป้องกันการ scroll หน้าหลัก
+    }
+  }
 
-  // showToastMessage(message: string, type: 'success' | 'error') {
-  //   this.toastMessage = message;
-  //   this.toastType = type;
-  //   this.showToast = true;
+  // ปิด Modal
+  closeGameModal(): void {
+    this.showGameModal = false;
+    this.selectedGame = null;
+    document.body.style.overflow = 'auto'; // คืนค่าการ scroll
+  }
 
-  //   setTimeout(() => {
-  //     this.showToast = false;
-  //   }, 3000);
-  // }
+  // เพิ่มลงตะกร้าจาก Modal
+  addToCartFromModal(): void {
+    if (this.selectedGame) {
+      this.addToCart(this.selectedGame);
+      this.closeGameModal();
+    }
+  }
 
+  addToCart(game: Game, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    const user_id = this.authService.getUser();
+    if (!user_id) {
+      alert('กรุณาเข้าสู่ระบบก่อนเพิ่มลงตะกร้า');
+      return;
+    }
+
+    const payload = {
+      user_id: user_id.user_id,
+      game_id: game.game_id
+    };
+
+    this.http.post(`${this.constants.API_ENDPOINT}/cart/gametocart`, payload).subscribe({
+      next: (res: any) => {
+        if (res.message === "คุณมีเกมนี้ในตะกร้าแล้ว") {
+          alert('⚠️ เกมนี้อยู่ในตะกร้าของคุณแล้ว');
+        } else if (res.message === "คุณได้ซื้อเกมนี้ไปแล้ว") {
+          alert('⚠️ คุณได้ซื้อเกมนี้ไปแล้ว');
+        } else {
+          alert('✅ เพิ่มเกมลงตะกร้าสำเร็จ');
+        }
+      },
+      error: (err) => {
+        console.error('Add to cart error:', err);
+        alert('❌ เกิดข้อผิดพลาดระหว่างเพิ่มลงตะกร้า');
+      }
+    });
+  }
 }

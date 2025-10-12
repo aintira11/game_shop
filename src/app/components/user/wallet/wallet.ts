@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Header } from "../../header/header";
-import { DataUser, Transaction, TransactionResponse } from '../../../config/model';
+import { DataUser, Transactionmodel, TransactionResponse } from '../../../config/model';
 import { AuthService } from '../../../service/auth.service';
 import { Constants } from '../../../config/constants';
 
@@ -45,7 +45,7 @@ export class Wallet implements OnInit {
   datauser: DataUser | null = null;
   walletBalance: number = 0;
   topupAmount: string = '';
-  transactions: Transaction[] = [];
+  transactions: Transactionmodel[] = [];
   expandedTransactionId: number | null = null; // เพิ่มตัวแปรนี้
   
   isProcessing: boolean = false;
@@ -76,7 +76,7 @@ export class Wallet implements OnInit {
           this.walletBalance = Number(data.wallet) || 0;
           // อัปเดต datauser
           if (this.datauser) {
-            // this.datauser.wallet = this.walletBalance;
+            this.datauser.wallet = this.walletBalance;
             this.authService.setUser(this.datauser);
           }
         },
@@ -151,6 +151,7 @@ export class Wallet implements OnInit {
         if (this.datauser) {
           this.datauser.wallet = this.walletBalance;
           this.authService.setUser(this.datauser);
+          console.log('Updated user wallet:', this.datauser);
         }
         this.loadWalletBalance();
         this.topupAmount = '';
@@ -180,7 +181,7 @@ export class Wallet implements OnInit {
   }
 
   // เรียงรายการทั้งหมดตามเวลาล่าสุด
-  getAllTransactionsSorted(): Transaction[] {
+  getAllTransactionsSorted(): Transactionmodel[] {
     if (!Array.isArray(this.transactions)) return [];
     
     return [...this.transactions].sort((a, b) => {

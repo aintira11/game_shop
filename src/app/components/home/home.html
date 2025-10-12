@@ -107,7 +107,7 @@
     <option value="all">All Categories</option>
     <option *ngFor="let category of categories" [value]="category.category_id">
   {{ category.category_name }}
-</option>
+    </option>
 
   </select>
 </div>
@@ -153,10 +153,10 @@
             <p class="game-category">
               {{ game.category_name}}
             </p>
-            <p class="game-description">
+            <!-- <p class="game-description">
               {{ game.description?.substring(0, 100) || '' }}{{ (game.description?.length || 0) > 100 ? '...' : '' }}
 
-            </p>
+            </p> -->
             
             <div class="game-footer" >
               <span class="game-price" style="font-size: medium;">฿{{ game.price | number:'1.2-2' }}</span>
@@ -169,6 +169,57 @@
               </button>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Game Detail Modal -->
+<div class="game-modal-overlay" *ngIf="showGameModal" (click)="closeGameModal()">
+  <div class="game-modal" (click)="$event.stopPropagation()" *ngIf="selectedGame">
+    <!-- Close Button -->
+    <button class="modal-close-btn" (click)="closeGameModal()">
+      <span>✕</span>
+    </button>
+
+    <div class="modal-content">
+      <!-- Left Side - Image -->
+      <div class="modal-image-section">
+        <img [src]="selectedGame.game_image" [alt]="selectedGame.game_name" class="modal-game-image" />
+      </div>
+
+      <!-- Right Side - Details -->
+      <div class="modal-details-section">
+        <div class="modal-header">
+          <h2 class="modal-game-title">{{ selectedGame.game_name }}</h2>
+          <span class="modal-category-badge">{{ selectedGame.category_name }}</span>
+        </div>
+
+        <div class="modal-description">
+          <h3 class="detail-heading">Description</h3>
+          <p>{{ selectedGame.description || 'No description available.' }}</p>
+        </div>
+
+        <div class="modal-stats">
+          <div class="stat-item">
+            <span class="stat-label">Category:</span>
+            <span class="stat-value">{{ selectedGame.category_name }}</span>
+          </div>
+          <div class="stat-item" *ngIf="selectedGame.purchase_count">
+            <span class="stat-label">Purchases:</span>
+            <span class="stat-value">🔥 {{ selectedGame.purchase_count }} sales</span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="modal-price-section">
+            <span class="price-label">Price</span>
+            <span class="modal-price">฿{{ selectedGame.price | number:'1.2-2' }}</span>
+          </div>
+          <button class="modal-add-cart-btn" (click)="addToCartFromModal()">
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>
