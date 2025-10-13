@@ -7,33 +7,6 @@ import { DataUser, Transactionmodel, TransactionResponse } from '../../../config
 import { AuthService } from '../../../service/auth.service';
 import { Constants } from '../../../config/constants';
 
-// Interface สำหรับโครงสร้างข้อมูลใหม่
-// interface Promotion {
-//   name: string;
-//   discount_value: string;
-// }
-
-// interface Game {
-//   buy_id: number;
-//   game_id: number;
-//   game_name: string;
-//   game_price: string;
-// }
-
-// interface Transaction {
-//   transaction_id: number;
-//   amount: string;
-//   type: 'deposit' | 'purchase';
-//   transaction_date: string;
-//   total_price?: string;
-//   buy_date?: string;
-//   promotion: Promotion | null;
-//   games: Game[];
-// }
-
-// interface TransactionResponse {
-//   transactions: Transaction[];
-// }
 
 @Component({
   selector: 'app-wallet',

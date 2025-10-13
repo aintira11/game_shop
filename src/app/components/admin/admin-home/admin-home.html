@@ -1,8 +1,125 @@
-<app-header></app-header>
-<div class="profile-page">
-  <div class="profile-container">
+<app-admin-header></app-admin-header> 
+
+<div class="admin-page">
+  <div class="admin-container">
+    <!-- Header Section -->
     <div class="profile-header">
       <h1 class="profile-title">Game Bestseller</h1>
     </div>
-</div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-banner">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="spinner"></div>
+      <p>กำลังโหลดข้อมูล...</p>
+    </div>
+
+    <!-- Filters Section -->
+    <div *ngIf="!isLoading" class="filters-section">
+        <!-- Search Box -->
+      <!-- <div class="search-box">
+        <input
+          type="text"
+          placeholder="ค้นหาชื่อเกม..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()"
+          class="search-input"
+        />
+        <span class="search-icon">🔍</span>
+      </div> -->
+
+      <!-- Category Filter -->
+      <div class="sort-box">
+        <label for="category-select">Category:</label>
+        <select
+          id="category-select"
+          class="filter-select"
+          [(ngModel)]="selectedCategory"
+          (change)="onCategoryChange()"
+        >
+          <option value="all">All Categories</option>
+          <option *ngFor="let category of uniqueCategories" [value]="category">
+            {{ category }}
+          </option>
+        </select>
+      </div>
+
+      <div class="sort-box">
+        <label for="sort-select">Sort by order:</label>
+        <select
+          id="sort-select"
+          [(ngModel)]="sortBy"
+          (change)="onSortChange()"
+          class="sort-select"
+        >
+          <option value="recent">latest</option>
+          <option value="name">Game name (A-Z)</option>
+          <option value="price">Price (maximum)</option>
+          <option value="best_selling">Best selling</option>
+        </select>
+      </div>
+    </div>
+
+
+    
+    <!-- Games List -->
+    <div *ngIf="!isLoading && filteredGames.length > 0" class="games-grid">
+      <div
+        *ngFor="let game of filteredGames ; let i = index"
+        class="game-card"
+        [class.selected]="selectedGame?.game_id === game.game_id"
+        (click)="selectGame(game)"
+      >
+        <div class="game-card-header">
+          <img
+            *ngIf="game.game_image"
+            [src]="game.game_image"
+            [alt]="game.game_name"
+            class="game-image"
+          />
+          <div *ngIf="!game.game_image" class="game-image-placeholder">
+            <span>ไม่มีรูป</span>
+          </div>
+          <div class="game-badge" *ngIf="sortBy === 'best_selling'">
+            <!-- <span class="badge-sold">{{ game.purchase_count || 0 }} ขาย</span> -->
+            <span class="badge-sold">🏆 #{{ i+1 }}</span>
+          </div>
+        </div>
+
+        <div class="game-card-body">
+          
+          <div  style="display: flex; align-items: flex-start; justify-content: space-between;">
+          <h3 class="game-name">{{ game.game_name }}</h3>
+            <span class="detail-value">
+                {{ game.release_date | date: 'dd/MM/yyyy' }}
+              </span>
+          </div>
+
+          <p class="game-category" >
+                {{ game.category_name}}
+              </p>
+          <p class="game-description">{{ game.description | slice: 0: 140 }}...</p>
+
+          <div class="game-stats">
+                <span class="purchase-count">{{ game.purchase_count }} purchases</span>
+              </div>
+            
+              <div class="game-footer">
+                <span class="game-price">฿{{ game.price | number:'1.2-2' }}</span>
+                 <!-- <span class="game-price">฿{{ game.price | truncateNumber:2 }}</span> -->
+
+                <div class="detail-row">
+              <!-- <span class="detail-label">Available for sale :</span> -->
+            </div>
+          </div>
+
+         
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

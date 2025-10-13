@@ -3,7 +3,9 @@
 <div class="cart-container">
   <div class="cart-header">
     <div *ngIf="datauser">
+      <br>
       <h1 class="profile-title" style="margin-bottom: 5px;">Shopping Cart</h1>
+      <br>
       <span class="balance-label">💰 Remaining Balance: </span>
       <span class="balance-amount">฿{{ datauser.wallet | number:'1.2-2' }}</span>
     </div>

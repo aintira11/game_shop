@@ -2,8 +2,196 @@
 
 <div class="profile-page">
   <div class="profile-container">
+    <!-- Header -->
     <div class="profile-header">
-      <h1 class="profile-title">Profile</h1>
+      <div class="header-content">
+        <h1 class="profile-title">🎮 My Game Library</h1>
+        <div class="library-stats">
+          <span class="stat-badge">{{ filteredGames.length }} Games</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Filter & Search Section -->
+    <div class="filter-section">
+      <!-- Search Bar -->
+      <div class="search-group">
+        <input 
+          type="text" 
+          class="search-input"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          placeholder="Search your games..."
+        />
+        <button class="search-btn" (click)="onSearch()">
+          🔍
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-controls">
+        <div class="filter-item">
+          <label>Category:</label>
+          <select 
+            class="filter-select" 
+            [(ngModel)]="selectedCategory"
+            (change)="onCategoryChange()"
+          >
+            <option value="all">All Categories</option>
+            <option *ngFor="let category of getUniqueCategories()" [value]="category">
+              {{ category }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label>Sort by:</label>
+          <select 
+            class="filter-select" 
+            [(ngModel)]="sortBy"
+            (change)="onSortChange()"
+          >
+            <option value="recent">Recently Added</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="price">Price (High to Low)</option>
+          </select>
+        </div>
+      </div>
     </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading your library...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && libraryGames.length === 0" class="empty-state">
+      <div class="empty-icon">📚</div>
+      <h2>Your Library is Empty</h2>
+      <p>You haven't purchased any games yet. Browse our store to find your next adventure!</p>
+      <button class="browse-btn" routerLink="/home">Browse Games</button>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="!isLoading && libraryGames.length > 0 && filteredGames.length === 0" class="no-results">
+      <p>No games found matching your filters.</p>
+    </div>
+
+    <!-- Games Grid -->
+    <div *ngIf="!isLoading && filteredGames.length > 0" class="games-grid">
+      <div 
+        *ngFor="let game of filteredGames" 
+        class="game-card"
+        (click)="viewGameDetail(game)"
+      >
+        <div class="game-image">
+          <img [src]="game.game_image" [alt]="game.game_name" />
+          <div class="game-overlay">
+            <button class="play-btn">
+              View Details
+            </button>
+          </div>
+          <div class="owned-badge">
+            ✓ Owned
+          </div>
+        </div>
+
+        <div class="game-info">
+          <h3 class="game-title">{{ game.game_name }}</h3>
+          <p class="game-category">{{ game.category_name }}</p>
+          
+          <div class="game-meta">
+            <div class="meta-item">
+              <span class="meta-label">Purchased:</span>
+              <span class="meta-value">{{ formatDate(game.buy_date) }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Owned for:</span>
+              <span class="meta-value">{{ getDaysOwned(game.buy_date) }} days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Game Detail Modal -->
+<div class="game-modal-overlay" *ngIf="showGameModal" (click)="closeGameModal()">
+  <div class="game-modal" (click)="$event.stopPropagation()" *ngIf="selectedGame">
+    <!-- Close Button -->
+    <button class="modal-close-btn" (click)="closeGameModal()">
+      <span>✕</span>
+    </button>
+
+    <div class="modal-content">
+      <!-- Left Side - Image -->
+      <div class="modal-image-section">
+        <img [src]="selectedGame.game_image" [alt]="selectedGame.game_name" class="modal-game-image" />
+        <div class="ownership-info">
+          <div class="ownership-badge">
+            ✓ You own this game
+          </div>
+          <div class="ownership-date">
+            Purchased on {{ formatDate(selectedGame.buy_date) }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side - Details -->
+      <div class="modal-details-section">
+        <div class="modal-header">
+          <h2 class="modal-game-title">{{ selectedGame.game_name }}</h2>
+          <span class="modal-category-badge">{{ selectedGame.category_name }}</span>
+        </div>
+
+        <div class="modal-description">
+          <h3 class="detail-heading">About This Game</h3>
+          <p>{{ selectedGame.description || 'No description available.' }}</p>
+        </div>
+
+        <div class="modal-stats">
+          <div class="stat-item">
+            <span class="stat-icon">📅</span>
+            <div class="stat-content">
+              <span class="stat-label">Release Date</span>
+              <span class="stat-value">{{ formatDate(selectedGame.release_date) }}</span>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <span class="stat-icon">🎮</span>
+            <div class="stat-content">
+              <span class="stat-label">Category</span>
+              <span class="stat-value">{{ selectedGame.category_name }}</span>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-icon">🔥</span>
+            <div class="stat-content">
+              <span class="stat-label">Total Purchases</span>
+              <span class="stat-value">{{ selectedGame.purchase_count }} players</span>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-icon">⏱️</span>
+            <div class="stat-content">
+              <span class="stat-label">Days Owned</span>
+              <span class="stat-value">{{ getDaysOwned(selectedGame.buy_date) }} days</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="purchase-info">
+            <span class="purchase-label">Original Price : </span>
+            <span class="purchase-price"> ฿ {{ selectedGame.price | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

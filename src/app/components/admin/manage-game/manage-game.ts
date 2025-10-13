@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Header } from "../../admin/header/header";
+import { adminHeader } from "../adminHeader/header";
 import { Constants } from '../../../config/constants';
 import { CloudinaryService } from '../../../service/cloudinary.service';
 import { HttpClient } from '@angular/common/http';
@@ -12,7 +12,7 @@ import { TruncateNumberPipe } from '../../../config/truncate-number.pipe';
 
 @Component({
   selector: 'app-manage-game',
-  imports: [Header, FormsModule, CommonModule, TruncateNumberPipe],
+  imports: [adminHeader, FormsModule, CommonModule, TruncateNumberPipe],
   templateUrl: './manage-game.html',
   styleUrl: './manage-game.scss'
 })

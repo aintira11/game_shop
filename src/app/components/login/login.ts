@@ -62,7 +62,7 @@ async login(): Promise<void> {
       const user = this.dataLogin[0];
       this.authService.setUser(user);
       if (user.user_type === 'admin') {
-        this.router.navigate(['manage_game']);
+        this.router.navigate(['admin']);
       } else {
         this.router.navigate(['']);
       }

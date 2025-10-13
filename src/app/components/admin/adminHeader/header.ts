@@ -5,12 +5,12 @@ import { DataUser } from '../../../config/model';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-admin-header',
   imports: [RouterLink,CommonModule],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
-export class Header implements OnInit {
+export class adminHeader implements OnInit {
 
   datauser: DataUser | null = null;
 
@@ -24,9 +24,10 @@ export class Header implements OnInit {
   Transaction(): void {
     this.router.navigate(['/transation']);
   }
-  // gameshop(): void {
-  //   this.router.navigate(['']);
-  // }
+
+  goToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
 
   logout(): void {
     this.authService.logout();
@@ -35,11 +36,14 @@ export class Header implements OnInit {
 
   manage_game(): void {
     // this.authService.logout();
-    this.router.navigate(['manage_game']);
+    this.router.navigate(['/manage_game']);
   }
   adminhome(): void {
     // this.authService.logout();
-    this.router.navigate(['admin']);
+    this.router.navigate(['/admin']);
   }
+  gotodiscount() {
+    this.router.navigate(['/discount']);
+}
   
 }

@@ -8,10 +8,11 @@ import { AuthService } from '../../../service/auth.service';
 import { DataUser } from '../../../config/model';
 import { Constants } from '../../../config/constants';
 import { CloudinaryService } from '../../../service/cloudinary.service';
+import { adminHeader } from '../../admin/adminHeader/header';
 
 @Component({
   selector: 'app-profile',
-  imports: [Header,CommonModule, FormsModule],
+  imports: [Header, CommonModule, FormsModule, adminHeader],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
 })
@@ -271,7 +272,7 @@ export class Profile implements OnInit {
   }
 
   goToGameHistory(): void {
-    this.router.navigate(['/game-history']);
+    this.router.navigate(['/wallet']);
   }
 
   goToTopUpHistory(): void {

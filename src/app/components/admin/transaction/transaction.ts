@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Header } from "../../admin/header/header";
+import { adminHeader } from "../adminHeader/header";
 import { Constants } from '../../../config/constants';
 import { DataUser, Transactionmodel, TransactionResponse } from '../../../config/model';
 
 
 @Component({
   selector: 'app-transaction',
-  imports: [Header, CommonModule, FormsModule],
+  imports: [adminHeader, CommonModule, FormsModule],
   templateUrl: './transaction.html',
   styleUrl: './transaction.scss'
 })

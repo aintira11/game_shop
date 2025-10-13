@@ -9,6 +9,7 @@ import { ManageGame } from './components/admin/manage-game/manage-game';
 import { Cart } from './components/user/cart/cart';
 import { Library } from './components/user/library/library';
 import { Transaction } from './components/admin/transaction/transaction';
+import { Discountcode } from './components/admin/discountcode/discountcode';
 
 export const routes: Routes = [
      {path: '', component: Home},
@@ -18,6 +19,7 @@ export const routes: Routes = [
      {path: 'admin',component:AdminHome},
      {path: 'transation', component: Transaction},
      {path: 'manage_game' ,component:ManageGame},
+     {path:  'discount' ,component:Discountcode},
      //user
      {path: 'profile',component:Profile},
      {path: 'wallet' ,component:Wallet},

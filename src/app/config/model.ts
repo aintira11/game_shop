@@ -70,3 +70,15 @@ export interface Transactionmodel {
 export interface TransactionResponse {
   transactions: Transactionmodel[];
 }
+
+export interface gameLibrary {
+  game_id: number
+  game_name: string
+  description: string
+  price: string
+  game_image: string
+  release_date: string
+  category_name: string
+  purchase_count: number
+  buy_date: string
+}

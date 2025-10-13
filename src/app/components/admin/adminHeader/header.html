@@ -1,13 +1,15 @@
 <header class="app-header">
-  <div class="brand" routerLink="/home">GameShop</div>
+  <div class="brand" routerLink="/home">Manage game stores</div>
   <nav class="main-nav">
-    <!-- <button class="nav-btn" type="button" (click)="adminhome()">Home</button> -->
+    <button class="nav-btn" type="button" (click)="adminhome()">Home</button>
     <button class="nav-btn" type="button"(click)="manage_game()">Game</button>
     <button class="nav-btn" type="button" (click)="Transaction()">Transaction</button>
-    <button class="nav-btn" type="button" >Discount Code</button>
+    <button class="nav-btn" type="button" (click)="gotodiscount()">Discount Code</button>
+      <button class="nav-btn" type="button" (click)="goToProfile()">profile</button>
       <button class="nav-btn" type="button" (click)="logout()">Log out</button>
+    
   </nav>
-  <!-- <div class="avatar">
+  <div class="avatar">
     <img [src]="datauser?.profile || 'assets/image/cat%204.png'" alt="avatar" />
-  </div> -->
+  </div>
 </header>
