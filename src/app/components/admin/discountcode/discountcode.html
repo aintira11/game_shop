@@ -1,1 +1,239 @@
-<p>discountcode works!</p>
+<app-admin-header></app-admin-header>
+
+<div class="profile-page">
+  <div class="profile-container">
+    <!-- Header Section -->
+    <div class="profile-header">
+      <h1 class="profile-title">Discount Management</h1>
+    </div>
+
+    <!-- Messages -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Filter and Action Section -->
+    <div class="controls-section">
+      <div class="filter-group">
+        <label class="filter-label">Filter :</label>
+        <select 
+          class="filter-select" 
+          [(ngModel)]="filterType" 
+          (change)="onFilterChange()">
+          <option value="all">all</option>
+          <option value="limited">available</option>
+          <option value="unlimited">expire</option>
+        </select>
+      </div>
+
+      <button class="btn btn-add" (click)="openAddModal()" [disabled]="isLoading">
+        + Add a promotion
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+
+    <!-- Promotions Table -->
+    <div *ngIf="!isLoading && filteredPromotions.length > 0" class="table-container">
+      <table class="promotions-table">
+        <thead>
+          <tr>
+            <th>Promo code</th>
+            <th>Promotion name</th>
+            <th>Type of deduction</th>
+            <th>deduction value</th>
+            <th>limit use</th>
+            <th>Creation date</th>
+            <th style="text-align: center;">management</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let promotion of filteredPromotions" class="table-row">
+            <td class="cell-id">{{ promotion.promotion_id }}</td>
+            <td class="cell-name">{{ promotion.promotion_name }}</td>
+            <td class="cell-type">{{ promotion.discount_type === '%' ? 'percent' : 'Fixed price' }}</td>
+            <td class="cell-value">{{ getDiscountDisplay(promotion) }}</td>
+            <td class="cell-limit">
+              <span [ngClass]="getStatusBadgeClass(promotion.limit_promotion)" class="badge">
+                {{ getLimitDisplay(promotion.limit_promotion) }}
+              </span>
+            </td>
+            <td class="cell-date">{{ promotion.promotion_date | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="cell-actions">
+              <button 
+                class="btn btn-edit" 
+                (click)="openEditModal(promotion)"
+                [disabled]="isLoading">
+                Edit
+              </button>
+              <button 
+                class="btn btn-delete" 
+                (click)="deletePromotion(promotion.promotion_id)"
+                [disabled]="isLoading">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredPromotions.length === 0" class="empty-state">
+      <p>No promotions found in this group.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div *ngIf="showAddModal" class="modal-overlay" (click)="closeAddModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add new promotion</h2>
+      <button class="btn-close" (click)="closeAddModal()">✕</button>
+    </div>
+
+    <form [formGroup]="promotionForm" class="modal-body">
+      <div class="form-group">
+        <label>Promotion name *</label>
+        <input 
+          type="text" 
+          formControlName="promotion_name" 
+          class="form-input"
+          placeholder="EX. GAME20">
+        <span *ngIf="promotionForm.get('promotion_name')?.invalid && promotionForm.get('promotion_name')?.touched" class="error-text">
+          Promotion name must be at least 2 characters.
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label>Number of times that can be used *</label>
+        <input 
+          type="number" 
+          formControlName="limit_promotion" 
+          class="form-input"
+          placeholder="EX. 10"
+          min="0">
+        <small class="help-text">เมื่อจำนวนลงมา 0 โค้ดส่วนลดนี้จะไม่สามารถใช้ได้อีกต่อไป</small>
+        <span *ngIf="promotionForm.get('limit_promotion')?.invalid && promotionForm.get('limit_promotion')?.touched" class="error-text">
+          กรุณาใส่จำนวนที่ถูกต้อง
+        </span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Type *</label>
+          <select formControlName="discount_type" class="form-input">
+            <option value="%">percent (%)</option>
+            <option value="fixed">Fixed price (฿)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Deduction value *</label>
+          <input 
+            type="number" 
+            formControlName="discount_value" 
+            class="form-input"
+            placeholder="0.00"
+            min="0"
+            step="0.01">
+          <span *ngIf="promotionForm.get('discount_value')?.invalid && promotionForm.get('discount_value')?.touched" class="error-text">
+            กรุณาใส่ค่าที่ถูกต้อง
+          </span>
+        </div>
+      </div>
+     
+    </form>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" (click)="closeAddModal()">cancel</button>
+      <button 
+        class="btn btn-submit" 
+        (click)="addPromotion()"
+        [disabled]="promotionForm.invalid || isLoading">
+        {{ isLoading ? 'In progress...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Edit promotion</h2>
+      <button class="btn-close" (click)="closeEditModal()">✕</button>
+    </div>
+    
+    <form [formGroup]="promotionForm" class="modal-body">
+      <div class="form-group">
+        <label>Promotion name *</label>
+        <input 
+          type="text" 
+          formControlName="promotion_name" 
+          class="form-input"
+          placeholder="เช่น GAME20">
+        <span *ngIf="promotionForm.get('promotion_name')?.invalid && promotionForm.get('promotion_name')?.touched" class="error-text">
+          ชื่อโปรโมชั่นต้องมีอย่างน้อย 2 ตัวอักษร
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label>Number of times that can be used *</label>
+        <input 
+          type="number" 
+          formControlName="limit_promotion" 
+          class="form-input"
+          placeholder="เช่น 10"
+          min="0">
+        <small class="help-text">เมื่อจำนวนลงมา 0 โค้ดส่วนลดนี้จะไม่สามารถใช้ได้อีกต่อไป</small>
+        <span *ngIf="promotionForm.get('limit_promotion')?.invalid && promotionForm.get('limit_promotion')?.touched" class="error-text">
+          กรุณาใส่จำนวนที่ถูกต้อง
+        </span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Type *</label>
+          <select formControlName="discount_type" class="form-input">
+            <option value="%">percent (%)</option>
+            <option value="fixed">Fixed price (฿)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>deduction value *</label>
+          <input 
+            type="number" 
+            formControlName="discount_value" 
+            class="form-input"
+            placeholder="0.00"
+            min="0"
+            step="0.01">
+          <span *ngIf="promotionForm.get('discount_value')?.invalid && promotionForm.get('discount_value')?.touched" class="error-text">
+            กรุณาใส่ค่าที่ถูกต้อง
+          </span>
+        </div>
+        
+      </div>
+       <small class="help-text" style="color: rgb(255, 187, 0);">! เมื่อแก้ไข limit ผู้ใช้ที่เคยใช้ส่วนลดนนี้แล้วจะไม่สามารถใช้ส่วนลดนี้ได้อีก</small>
+    </form>
+
+    <div class="modal-footer">
+      <button class="btn btn-cancel" (click)="closeEditModal()">Cancel</button>
+      <button 
+        class="btn btn-submit" 
+        (click)="updatePromotion()"
+        [disabled]="promotionForm.invalid || isLoading">
+        {{ isLoading ? 'In progress...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</div>

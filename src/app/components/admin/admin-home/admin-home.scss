@@ -95,6 +95,7 @@
   margin-bottom: 32px;
   align-items: flex-end;
   flex-wrap: wrap;
+  
 }
 
 .search-box {
@@ -186,6 +187,16 @@
     option {
       background-color: #1a1f3a;
       color: #fff;
+    }
+  }
+    .library-stats {
+    .stat-badge {
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      color: #000;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
     }
   }
 

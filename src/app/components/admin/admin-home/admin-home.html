@@ -19,7 +19,7 @@
     </div>
 
     <!-- Filters Section -->
-    <div *ngIf="!isLoading" class="filters-section">
+  <div *ngIf="!isLoading"  style="display: flex; align-items: center; justify-content: space-between;">
         <!-- Search Box -->
       <!-- <div class="search-box">
         <input
@@ -33,6 +33,7 @@
       </div> -->
 
       <!-- Category Filter -->
+     <div class="filters-section">
       <div class="sort-box">
         <label for="category-select">Category:</label>
         <select
@@ -62,9 +63,11 @@
           <option value="best_selling">Best selling</option>
         </select>
       </div>
+     </div>
+      <div class="library-stats" style="margin-bottom: 20px;">
+        <span class="stat-badge">{{ filteredGames.length }} Games</span>
     </div>
-
-
+  </div>
     
     <!-- Games List -->
     <div *ngIf="!isLoading && filteredGames.length > 0" class="games-grid">
