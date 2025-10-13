@@ -6,6 +6,7 @@ import { DataUser, gameLibrary } from '../../../config/model';
 import { AuthService } from '../../../service/auth.service';
 import { Constants } from '../../../config/constants';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-library',
@@ -31,6 +32,7 @@ export class Library implements OnInit {
     private http: HttpClient,
     private authService: AuthService,
     private constants: Constants,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -148,5 +150,8 @@ export class Library implements OnInit {
     const diffTime = Math.abs(today.getTime() - purchased.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
+  }
+  Home(){
+    this.router.navigate(['/']);
   }
 }
