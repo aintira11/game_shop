@@ -8,8 +8,6 @@ import { CommonModule } from '@angular/common';
 import { Category, Game } from '../../../config/model';
 import { TruncateNumberPipe } from '../../../config/truncate-number.pipe';
 
-
-
 @Component({
   selector: 'app-manage-game',
   imports: [adminHeader, FormsModule, CommonModule, TruncateNumberPipe],
@@ -25,6 +23,12 @@ export class ManageGame implements OnInit {
   searchQuery: string = '';
   isLoading: boolean = false;
   categories: Category[] = [];
+
+  // Category Modal
+  showCategoryModal: boolean = false;
+  newCategoryName: string = '';
+  editingCategoryId: number | null = null;
+  editCategoryName: string = '';
 
   currentGame: Partial<Game> = {
     game_name: '',
@@ -69,6 +73,7 @@ export class ManageGame implements OnInit {
     console.log('Categories:', this.categories);
   }
 
+  // ===== Game Modal Methods =====
   openAddModal(): void {
     this.isEditMode = false;
     this.showModal = true;
@@ -122,7 +127,6 @@ export class ManageGame implements OnInit {
   }
 
   async saveGame(): Promise<void> {
-    // ตรวจสอบข้อมูลที่ต้องกรอก
     if (!this.currentGame.game_name?.trim()) {
       alert('กรุณากรอกชื่อเกม');
       return;
@@ -148,7 +152,6 @@ export class ManageGame implements OnInit {
       return;
     }
 
-    // ถ้าเป็น "เพิ่มเกมใหม่" ต้องมีรูป
     if (!this.isEditMode && !this.selectedFile) {
       alert('กรุณาเลือกรูปภาพเกม');
       return;
@@ -157,7 +160,6 @@ export class ManageGame implements OnInit {
     try {
       this.isLoading = true;
 
-      // อัปโหลดรูปภาพใหม่ (เฉพาะถ้ามีการเลือกไฟล์ใหม่)
       if (this.selectedFile) {
         const uploadResult: any = await this.cloudinary.uploadImage(this.selectedFile).toPromise();
         this.currentGame.game_image = uploadResult.secure_url;
@@ -165,7 +167,6 @@ export class ManageGame implements OnInit {
         console.log('ใช้รูปภาพเดิม:', this.currentGame.game_image);
       }
 
-      // สร้าง payload ที่จะส่งไปยัง API
       const gameData = {
         game_name: this.currentGame.game_name,
         price: this.currentGame.price,
@@ -175,7 +176,6 @@ export class ManageGame implements OnInit {
         release_date: this.currentGame.release_date || null
       };
 
-      // อัปเดตหรือเพิ่มเกม
       if (this.isEditMode) {
         this.http.put(`${this.Constants.API_ENDPOINT}/game/gameUpdate/${this.currentGame.game_id}`, gameData).subscribe({
           next: (response) => {
@@ -233,27 +233,95 @@ export class ManageGame implements OnInit {
     }
   }
 
-  getFilteredGames(): Game[] {
-  // ถ้าไม่มีการค้นหา (searchQuery เป็นค่าว่าง) ให้แสดงเกมทั้งหมด
-  if (!this.searchQuery || !this.searchQuery.trim()) {
-    return this.games;
+  // ===== Category Modal Methods =====
+  openCategoryModal(): void {
+    this.showCategoryModal = true;
+    this.newCategoryName = '';
+    this.editingCategoryId = null;
+    this.editCategoryName = '';
+    this.getCategory(); // Refresh categories
   }
 
-  // แปลงคำค้นหาเป็นตัวพิมพ์เล็กเพื่อการเปรียบเทียบที่ไม่สน case-sensitive
-  const lowerCaseQuery = this.searchQuery.toLowerCase();
+  closeCategoryModal(): void {
+    this.showCategoryModal = false;
+    this.newCategoryName = '';
+    this.editingCategoryId = null;
+    this.editCategoryName = '';
+  }
 
-  // กรอง (filter) อาร์เรย์ games
-  return this.games.filter(game => {
-    // ตรวจสอบว่าชื่อเกม (game_name) มีคำค้นหาอยู่หรือไม่
-    const nameMatch = game.game_name && game.game_name.toLowerCase().includes(lowerCaseQuery);
-    
-    // ตรวจสอบว่าชื่อหมวดหมู่ (category_name) มีคำค้นหาอยู่หรือไม่
-    const categoryMatch = game.category_name && game.category_name.toLowerCase().includes(lowerCaseQuery);
+  addCategory(): void {
+    if (!this.newCategoryName?.trim()) {
+      alert('กรุณากรอกชื่อหมวดหมู่');
+      return;
+    }
 
-    // คืนค่าเกมที่ตรงเงื่อนไข (ชื่อเกม หรือ ชื่อหมวดหมู่)
-    return nameMatch || categoryMatch;
-  });
-}
+    this.isLoading = true;
+    this.http.post(`${this.Constants.API_ENDPOINT}/game/categories/add`, {
+      category_name: this.newCategoryName.trim()
+    }).subscribe({
+      next: (response) => {
+        alert('เพิ่มหมวดหมู่สำเร็จ');
+        this.newCategoryName = '';
+        this.getCategory();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error adding category:', error);
+        alert(error.error?.message || 'เกิดข้อผิดพลาดในการเพิ่มหมวดหมู่');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  startEditCategory(category: Category): void {
+    this.editingCategoryId = category.category_id;
+    this.editCategoryName = category.category_name;
+  }
+
+  saveEditCategory(categoryId: number): void {
+    if (!this.editCategoryName?.trim()) {
+      alert('กรุณากรอกชื่อหมวดหมู่');
+      return;
+    }
+
+    this.isLoading = true;
+    this.http.put(`${this.Constants.API_ENDPOINT}/game/categories/${categoryId}`, {
+      category_name: this.editCategoryName.trim()
+    }).subscribe({
+      next: (response) => {
+        alert('อัปเดตหมวดหมู่สำเร็จ');
+        this.editingCategoryId = null;
+        this.editCategoryName = '';
+        this.getCategory();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error updating category:', error);
+        alert(error.error?.message || 'เกิดข้อผิดพลาดในการอัปเดตหมวดหมู่');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  cancelEditCategory(): void {
+    this.editingCategoryId = null;
+    this.editCategoryName = '';
+  }
+
+  // ===== Filter and Utility Methods =====
+  getFilteredGames(): Game[] {
+    if (!this.searchQuery || !this.searchQuery.trim()) {
+      return this.games;
+    }
+
+    const lowerCaseQuery = this.searchQuery.toLowerCase();
+
+    return this.games.filter(game => {
+      const nameMatch = game.game_name && game.game_name.toLowerCase().includes(lowerCaseQuery);
+      const categoryMatch = game.category_name && game.category_name.toLowerCase().includes(lowerCaseQuery);
+      return nameMatch || categoryMatch;
+    });
+  }
 
   formatDate(date: string): string {
     if (!date) return '';

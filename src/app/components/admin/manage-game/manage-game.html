@@ -6,14 +6,16 @@
     <div class="profile-header">
       <div style="display: flex; align-items: center; justify-content: space-around;">
         <h1 class="profile-title" style="margin-right: 30px;">Add/Edit Game</h1>
-        <button class="btn-add" (click)="openAddModal()">Add</button>
+        <button class="btn-add" (click)="openAddModal()">Add Game</button>
+        &nbsp;&nbsp;&nbsp;
+        <button class="btn-add" style="background-color: rgb(255, 208, 0);" (click)="openCategoryModal()">Edit category</button>
       </div>
       <div class="header-actions">
         <input 
-  type="text" 
-  class="search-input" 
-  [(ngModel)]="searchQuery"
-  placeholder="Type Game or Category to search..."> 
+          type="text" 
+          class="search-input" 
+          [(ngModel)]="searchQuery"
+          placeholder="Type Game or Category to search..."> 
       </div>
     </div>
 
@@ -25,15 +27,14 @@
           <h3 class="game-name">{{ game.game_name }}</h3>
           <p class="game-genre">Category: {{ game.category_name || 'ไม่ระบุ' }}</p>
           <p class="game-date">{{ game.release_date | date:'dd/MM/yyyy' }}</p>
-          <!-- <p class="game-price"> ฿ {{ game.price | number:'1.0-0' }}</p> -->
-           <span class="game-price">฿{{ game.price | truncateNumber:2 }}</span>
+          <span class="game-price">฿{{ game.price | truncateNumber:2 }}</span>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Game Modal -->
 <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
@@ -118,11 +119,95 @@
         <!-- Action Buttons -->
         <div class="modal-actions">
           <button class="btn-edit" (click)="saveGame()" [disabled]="isLoading">
-            {{ isLoading ? 'กำลังบันทึก...' : (isEditMode ? 'Edit' : 'Add') }}
+            {{ isLoading ? 'Loading...' : (isEditMode ? 'Edit' : 'Add') }}
           </button>
           <button class="btn-delete" (click)="isEditMode ? deleteGame(currentGame.game_id!) : closeModal()" [disabled]="isLoading">
             {{ isEditMode ? 'Delete' : 'Cancel' }}
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal-overlay" *ngIf="showCategoryModal" (click)="closeCategoryModal()">
+  <div class="category-modal-content" (click)="$event.stopPropagation()">
+    <div class="category-modal-header">
+      <h2 class="modal-title">Manage categories</h2>
+      <button class="btn-close" (click)="closeCategoryModal()">✕</button>
+    </div>
+
+    <div class="category-modal-body">
+      <!-- Add New Category Section -->
+      <div class="add-category-section">
+        <h3>Add category</h3>
+        <div class="form-group">
+          <input 
+            type="text" 
+            [(ngModel)]="newCategoryName" 
+            class="form-input"
+            placeholder="Category name"
+            (keyup.enter)="addCategory()">
+        </div>
+        <button class="btn-add-category" (click)="addCategory()" [disabled]="isLoading || !newCategoryName?.trim()">
+          {{ isLoading ? 'Loading...' : 'Add' }}
+        </button>
+      </div>
+
+      <!-- Category List -->
+      <div class="category-list-section">
+        <h3>All ({{ categories.length }})</h3>
+        <div class="category-list">
+          <div class="category-item" *ngFor="let category of categories">
+            <div class="category-item-info" *ngIf="editingCategoryId !== category.category_id">
+              <span class="category-name">{{ category.category_name }}</span>
+              <span class="category-date">{{ category.created_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+            
+            <!-- Edit Mode -->
+            <div class="category-item-edit" *ngIf="editingCategoryId === category.category_id">
+              <input 
+                type="text" 
+                [(ngModel)]="editCategoryName" 
+                class="form-input"
+                placeholder="Category name"
+                (keyup.enter)="saveEditCategory(category.category_id)">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="category-item-actions">
+              <button 
+                *ngIf="editingCategoryId !== category.category_id"
+                class="btn-icon btn-edit-icon" 
+                (click)="startEditCategory(category)"
+                title="Edit" style="background-color: rgb(255, 196, 0); font-size: medium;">
+                Edit
+              </button>
+              
+              <ng-container *ngIf="editingCategoryId === category.category_id">
+                <button 
+                  class="btn-icon btn-save-icon" 
+                  (click)="saveEditCategory(category.category_id)"
+                  [disabled]="isLoading"
+                  title="Save">
+                  ✓
+                </button>
+                <button 
+                  class="btn-icon btn-cancel-icon" 
+                  (click)="cancelEditCategory()"
+                  [disabled]="isLoading"
+                  title="Cancel">
+                  ✕
+                </button>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" *ngIf="categories.length === 0">
+            <p>There are no categories yet.</p>
+          </div>
         </div>
       </div>
     </div>
