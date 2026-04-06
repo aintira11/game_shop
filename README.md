@@ -1,59 +1,143 @@
-# GameshopWebsite
+# GameShop Website 🎮
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.3.
+A modern, responsive e-commerce platform for buying and selling video games, built with Angular and Firebase.
 
-## Development server
+## 📋 Overview
 
-To start a local development server, run:
+GameShop is a full-featured web application designed to provide users with an intuitive interface to browse, search, and purchase video games. The project leverages modern web technologies with a focus on performance and user experience.
 
+### Tech Stack
+- **Frontend Framework**: Angular 20.3.0
+- **Styling**: SCSS (37.4% of codebase)
+- **Language**: TypeScript (32.3% of codebase)
+- **Markup**: HTML (30.3% of codebase)
+- **UI Components**: Angular Material
+- **Backend**: Firebase
+- **Testing**: Jasmine + Karma
+- **Package Manager**: npm
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js and npm installed
+- Angular CLI globally installed (`npm install -g @angular/cli`)
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/aintira11/game_shop.git
+cd game_shop
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+### Development Server
+
+Start the local development server:
+```bash
+npm start
+```
+or
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Navigate to `http://localhost:4200/` in your browser. The application will automatically reload when you modify source files.
 
-## Code scaffolding
+## 📦 Project Structure
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+game_shop/
+├── src/
+│   ├── app/              # Angular application
+│   ├── assets/           # Static assets
+│   ├── styles.scss       # Global styles
+│   └── main.ts           # Entry point
+├── public/               # Public assets
+├── angular.json          # Angular CLI config
+├── tsconfig.json         # TypeScript config
+├── firebase.json         # Firebase config
+├── package.json          # Dependencies
+└── README.md
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🛠️ Available Commands
 
+### Development
 ```bash
+npm start           # Start development server
+npm run watch       # Build in watch mode
+```
+
+### Production
+```bash
+npm run build       # Build for production (optimized)
+```
+
+### Testing
+```bash
+npm test            # Run unit tests with Karma
+ng e2e              # Run end-to-end tests
+```
+
+### Code Generation
+```bash
+# Generate a new component
+ng generate component component-name
+
+# Generate other schematics (services, pipes, directives, etc.)
 ng generate --help
 ```
 
-## Building
+## 📝 Development Notes
 
-To build the project run:
+- **Styling**: SCSS is configured as the default stylesheet language for components
+- **Formatting**: Prettier is configured with 100-character line width and single quotes
+- **HTML Parser**: Uses Angular parser for HTML formatting
+- **Performance**: Configured with production build optimizations and size budgets
 
-```bash
-ng build
-```
+## 🔧 Build Configuration
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Production Budgets
+- Initial bundle: Max 3MB (warning at 1MB)
+- Component styles: Max 12kB per component (warning at 10kB)
+- Output hashing enabled for cache busting
 
-## Running unit tests
+### Development Features
+- Source maps enabled
+- No optimization for faster builds
+- License extraction disabled
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## 🔐 Firebase Integration
 
-```bash
-ng test
-```
+The project is configured with Firebase for:
+- Backend services
+- Authentication
+- Data storage
+- Hosting (optional)
 
-## Running end-to-end tests
+Ensure your Firebase configuration is properly set in `firebase.json` and `.firebaserc`.
 
-For end-to-end (e2e) testing, run:
+## 📚 Additional Resources
 
-```bash
-ng e2e
-```
+- [Angular Documentation](https://angular.dev)
+- [Angular CLI Reference](https://angular.dev/tools/cli)
+- [Angular Material](https://material.angular.io)
+- [Firebase Documentation](https://firebase.google.com/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 📄 License
 
-## Additional Resources
+This project is private. See the repository settings for more information.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 👨‍💻 Author
+
+Created by [@aintira11](https://github.com/aintira11)
+
+---
+
+**Last Updated**: October 2025
